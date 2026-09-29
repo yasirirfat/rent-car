@@ -1,5 +1,6 @@
 import 'package:rent_car/model/car_model.dart';
 
+/// The Ferrari fleet. Image paths are verified against `assets/images/`.
 List<CarModel> carList = [
   CarModel(
     company: "Ferrari",
@@ -13,11 +14,15 @@ List<CarModel> carList = [
     airbag: "6",
     fuelType: "Petrol",
     drivetrain: "AWD",
+    mileage: "12,400 km",
+    category: CarCategory.suv,
+    tagline: "The first ever four-door four-seater from Maranello.",
+    gallery: ["assets/images/gtc4lusso.png", "assets/images/roma.png"],
   ),
   CarModel(
     company: "Ferrari",
     model: "Roma",
-    image: "assets/images/360_modena.png",
+    image: "assets/images/roma.png",
     rating: 4.8,
     price: 395,
     maxSpeed: "320Km/h",
@@ -26,11 +31,15 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "8,700 km",
+    category: CarCategory.coupe,
+    tagline: "La Nuova Dolce Vita - timeless mid-front V8 elegance.",
+    gallery: ["assets/images/portofino_m.png", "assets/images/california.png"],
   ),
   CarModel(
     company: "Ferrari",
     model: "F8 Tributo",
-    image: "assets/images/296_gtb.png",
+    image: "assets/images/f8_tributo.png",
     rating: 4.9,
     price: 510,
     maxSpeed: "340Km/h",
@@ -39,6 +48,10 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "5,300 km",
+    category: CarCategory.coupe,
+    tagline: "A tribute to the most powerful V8 in Ferrari history.",
+    gallery: ["assets/images/488_pista.png", "assets/images/488_gtb.png"],
   ),
   CarModel(
     company: "Ferrari",
@@ -52,6 +65,10 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "PHEV",
     drivetrain: "AWD",
+    mileage: "3,150 km",
+    category: CarCategory.hyper,
+    tagline: "986 hp of plug-in hybrid fury with all-wheel drive.",
+    gallery: ["assets/images/296_gtb.png", "assets/images/laferrari.png"],
   ),
   CarModel(
     company: "Ferrari",
@@ -65,6 +82,10 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "6,900 km",
+    category: CarCategory.coupe,
+    tagline: "The naturally aspirated V12 flagship, 800 hp of theatre.",
+    gallery: ["assets/images/599_gtb.png", "assets/images/gtc4lusso.png"],
   ),
   CarModel(
     company: "Ferrari",
@@ -78,6 +99,10 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "PHEV",
     drivetrain: "RWD",
+    mileage: "4,180 km",
+    category: CarCategory.coupe,
+    tagline: "The littlest Ferrari V6, reinvented with electric boost.",
+    gallery: ["assets/images/sf90.png", "assets/images/f8_tributo.png"],
   ),
   CarModel(
     company: "Ferrari",
@@ -91,6 +116,9 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "1,250 km",
+    category: CarCategory.hyper,
+    tagline: "A homage to the 1967 Daytona 1-2-3 finish. Icona series.",
   ),
   CarModel(
     company: "Ferrari",
@@ -104,6 +132,9 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Hybrid",
     drivetrain: "RWD",
+    mileage: "940 km",
+    category: CarCategory.hyper,
+    tagline: "The definitive hybrid hypercar. 949 hp, 499 built.",
   ),
   CarModel(
     company: "Ferrari",
@@ -117,6 +148,9 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "10,400 km",
+    category: CarCategory.convertible,
+    tagline: "A retractable hard-top GT that does everything well.",
   ),
   CarModel(
     company: "Ferrari",
@@ -130,6 +164,10 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "7,300 km",
+    category: CarCategory.coupe,
+    tagline: "Twin-turbo V8 that rewrote the mid-engine rulebook.",
+    gallery: ["assets/images/488_pista.png", "assets/images/f8_tributo.png"],
   ),
   CarModel(
     company: "Ferrari",
@@ -143,6 +181,9 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "6,500 km",
+    category: CarCategory.coupe,
+    tagline: "Track-honed special with the most powerful V8 yet.",
   ),
   CarModel(
     company: "Ferrari",
@@ -156,6 +197,9 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "15,200 km",
+    category: CarCategory.coupe,
+    tagline: "The last naturally aspirated mid-engine V8 berlinetta.",
   ),
   CarModel(
     company: "Ferrari",
@@ -169,6 +213,9 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "17,800 km",
+    category: CarCategory.convertible,
+    tagline: "Grand touring comfort with a folding hard top.",
   ),
   CarModel(
     company: "Ferrari",
@@ -182,6 +229,9 @@ List<CarModel> carList = [
     airbag: "6",
     fuelType: "Petrol",
     drivetrain: "AWD",
+    mileage: "9,600 km",
+    category: CarCategory.suv,
+    tagline: "A shooting brake V12 with room for four and their luggage.",
   ),
   CarModel(
     company: "Ferrari",
@@ -195,6 +245,9 @@ List<CarModel> carList = [
     airbag: "2",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "620 km",
+    category: CarCategory.hyper,
+    tagline: "A barchetta with no roof and no windscreen. Pure sensation.",
   ),
   CarModel(
     company: "Ferrari",
@@ -208,6 +261,9 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "22,400 km",
+    category: CarCategory.coupe,
+    tagline: "Front-mid V12 grand tourer derived from the Enzo.",
   ),
   CarModel(
     company: "Ferrari",
@@ -221,6 +277,9 @@ List<CarModel> carList = [
     airbag: "4",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "28,600 km",
+    category: CarCategory.convertible,
+    tagline: "Open-air V8 scream with the classic gated manual option.",
   ),
   CarModel(
     company: "Ferrari",
@@ -234,11 +293,14 @@ List<CarModel> carList = [
     airbag: "2",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "34,200 km",
+    category: CarCategory.coupe,
+    tagline: "The aluminium-chassis V8 that started the modern era.",
   ),
   CarModel(
     company: "Ferrari",
     model: "Enzo Ferrari",
-    image: "assets/images/f430_spider.png",
+    image: "assets/images/enzo.png",
     rating: 5.0,
     price: 1500,
     maxSpeed: "350Km/h",
@@ -247,6 +309,9 @@ List<CarModel> carList = [
     airbag: "2",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "38,100 km",
+    category: CarCategory.hyper,
+    tagline: "Formula 1 technology for the road. Only 400 ever made.",
   ),
   CarModel(
     company: "Ferrari",
@@ -260,5 +325,8 @@ List<CarModel> carList = [
     airbag: "0",
     fuelType: "Petrol",
     drivetrain: "RWD",
+    mileage: "46,900 km",
+    category: CarCategory.coupe,
+    tagline: "The 80s icon with the most recognisable side strakes ever.",
   ),
 ];

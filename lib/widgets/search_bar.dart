@@ -1,93 +1,168 @@
 import 'package:flutter/material.dart';
 import 'package:rent_car/core/app_color.dart';
 
+/// Search input with a glass treatment, focus glow and a clear button that
+/// only appears while there is text.
 class SearchBars extends StatefulWidget {
-  // Live searching k liye callback aur controller baahir se receive karne k liye constructor variables
-  final ValueChanged<String>? onChanged;
-  final TextEditingController? controller;
-
   const SearchBars({
-    super.key, 
+    super.key,
     this.onChanged,
     this.controller,
+    this.hintText = 'Search the fleet...',
+    this.onSubmitted,
+    this.autofocus = false,
+    this.showFilterButton = false,
+    this.onFilterTap,
   });
+
+  final ValueChanged<String>? onChanged;
+  final TextEditingController? controller;
+  final String hintText;
+  final ValueChanged<String>? onSubmitted;
+  final bool autofocus;
+  final bool showFilterButton;
+  final VoidCallback? onFilterTap;
 
   @override
   State<SearchBars> createState() => _SearchBarsState();
 }
 
 class _SearchBarsState extends State<SearchBars> {
-  // Agar baahir se controller nahi aata to fallback k liye local controller bna rha ha
   late final TextEditingController _internalController;
+  final FocusNode _focusNode = FocusNode();
+  bool _focused = false;
+  bool _hasText = false;
 
   @override
   void initState() {
     super.initState();
     _internalController = widget.controller ?? TextEditingController();
+    _hasText = _internalController.text.isNotEmpty;
+    _internalController.addListener(_syncTextState);
+    _focusNode.addListener(_syncFocusState);
+  }
+
+  void _syncTextState() {
+    final has = _internalController.text.isNotEmpty;
+    if (has != _hasText && mounted) {
+      setState(() => _hasText = has);
+    }
+  }
+
+  void _syncFocusState() {
+    if (mounted) {
+      setState(() => _focused = _focusNode.hasFocus);
+    }
   }
 
   @override
   void dispose() {
-    // Agar local controller bna tha to use dispose kr rhy hain memory leaks se bachny k liye
+    _internalController.removeListener(_syncTextState);
+    _focusNode.removeListener(_syncFocusState);
+    _focusNode.dispose();
+    // Only dispose a controller we created ourselves.
     if (widget.controller == null) {
       _internalController.dispose();
     }
     super.dispose();
   }
 
+  void _clear() {
+    _internalController.clear();
+    widget.onChanged?.call('');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 52,
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      height: 54,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColor.containerColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+        color: _focused ? AppColor.surfaceVeilMax : AppColor.surfaceVeil,
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(
+          color: _focused
+              ? AppColor.primary.withValues(alpha: 0.7)
+              : AppColor.stroke,
+          width: _focused ? 1.5 : 1.1,
+        ),
+        boxShadow: _focused
+            ? AppColor.glow(AppColor.primary, opacity: 0.22, blur: 22)
+            : null,
       ),
       child: Row(
         children: [
-          const Icon(Icons.search, color: Colors.grey),
-
+          Icon(
+            Icons.search_rounded,
+            color: _focused ? AppColor.secondary : AppColor.textMuted,
+            size: 21,
+          ),
           const SizedBox(width: 10),
-
           Expanded(
             child: TextField(
-              controller: _internalController, // Link controller here
-              style: const TextStyle(color: Colors.white),
-              cursorColor: Colors.yellow,
-              // CHANGED HERE: Har key-press pr live text baahir HomeScreen ko jaye ga
+              controller: _internalController,
+              focusNode: _focusNode,
+              autofocus: widget.autofocus,
+              style: const TextStyle(
+                color: AppColor.textPrimary,
+                fontSize: 14.5,
+                fontWeight: FontWeight.w500,
+              ),
+              cursorColor: AppColor.secondary,
+              cursorHeight: 18,
               onChanged: widget.onChanged,
-              decoration: const InputDecoration(
+              onSubmitted: widget.onSubmitted,
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: "Type here to search",
-                hintStyle: TextStyle(color: Colors.grey),
-                isCollapsed: true,
-              ),
-            ),
-          ),
-
-          // CHANGED HERE: Close button ko interactive banaya ha jo search ko reset kray ga
-          GestureDetector(
-            onTap: () {
-              _internalController.clear(); // Text field saaf ho jaye gi
-              if (widget.onChanged != null) {
-                widget.onChanged!(""); // HomeScreen par list dubara reset ho jaye gi
-              }
-            },
-            child: Container(
-              height: 22,
-              width: 22,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: AppColor.white.withValues(alpha: 0.3),
-                  width: 1.5,
+                hintText: widget.hintText,
+                hintStyle: const TextStyle(
+                  color: AppColor.textMuted,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
-                shape: BoxShape.circle,
+                isCollapsed: true,
+                contentPadding: EdgeInsets.zero,
               ),
-              child: const Icon(Icons.close, size: 14, color: Colors.white),
             ),
           ),
+          if (_hasText)
+            GestureDetector(
+              onTap: _clear,
+              child: Container(
+                height: 22,
+                width: 22,
+                decoration: BoxDecoration(
+                  color: AppColor.textMuted.withValues(alpha: 0.25),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.close_rounded,
+                  size: 13,
+                  color: AppColor.textPrimary,
+                ),
+              ),
+            ),
+          if (widget.showFilterButton) ...[
+            const SizedBox(width: 10),
+            GestureDetector(
+              onTap: widget.onFilterTap,
+              child: Container(
+                height: 32,
+                width: 32,
+                decoration: BoxDecoration(
+                  color: AppColor.primary,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.tune_rounded,
+                  size: 16,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
