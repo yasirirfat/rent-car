@@ -5,10 +5,6 @@ import 'package:rent_car/widgets/painters/aurora_background.dart';
 import 'package:rent_car/widgets/painters/glass_card.dart';
 import 'package:rent_car/widgets/painters/progress_ring.dart';
 
-/// Settings tab built around grouped panels and live-updating controls.
-///
-/// Every control here reads from and writes to [AppState], so a toggle keeps
-/// its value when you leave the tab and come back. Nothing is local-only.
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
 
@@ -17,8 +13,6 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
-  /// Cached storage figure. "Clear app cache" resets it to zero, which is what
-  /// makes that action observably real rather than a snackbar.
   double _storageUsedMb = 128;
   static const double _storageTotalMb = 400;
 
@@ -39,7 +33,6 @@ class _SettingScreenState extends State<SettingScreen> {
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(20, 14, 20, 120),
             children: [
-              // --- Header ---
               Row(
                 children: [
                   const Column(
@@ -88,7 +81,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
               const SizedBox(height: 24),
 
-              // --- Preferences ---
               const _GroupLabel('PREFERENCES'),
               const SizedBox(height: 12),
               GlassCard(
@@ -132,7 +124,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
               const SizedBox(height: 26),
 
-              // --- Search radius slider ---
               const _GroupLabel('DISCOVERY'),
               const SizedBox(height: 12),
               GlassCard(
@@ -198,11 +189,13 @@ class _SettingScreenState extends State<SettingScreen> {
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         activeTrackColor: AppColor.secondary,
-                        inactiveTrackColor:
-                            AppColor.textPrimary.withValues(alpha: 0.08),
+                        inactiveTrackColor: AppColor.textPrimary.withValues(
+                          alpha: 0.08,
+                        ),
                         thumbColor: AppColor.textPrimary,
-                        overlayColor:
-                            AppColor.secondary.withValues(alpha: 0.16),
+                        overlayColor: AppColor.secondary.withValues(
+                          alpha: 0.16,
+                        ),
                         trackHeight: 4,
                       ),
                       child: Slider(
@@ -218,7 +211,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
               const SizedBox(height: 26),
 
-              // --- Security ---
               const _GroupLabel('SECURITY & PRIVACY'),
               const SizedBox(height: 12),
               GlassCard(
@@ -252,7 +244,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
               const SizedBox(height: 26),
 
-              // --- System ---
               const _GroupLabel('SYSTEM'),
               const SizedBox(height: 12),
               GlassCard(
@@ -307,7 +298,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
               const SizedBox(height: 26),
 
-              // --- Storage / usage ring ---
               const _GroupLabel('USAGE'),
               const SizedBox(height: 12),
               GlassCard(
@@ -319,10 +309,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       value: usedFraction,
                       size: 78,
                       strokeWidth: 6,
-                      gradientColors: const [
-                        AppColor.amber,
-                        AppColor.danger,
-                      ],
+                      gradientColors: const [AppColor.amber, AppColor.danger],
                       child: Text(
                         '${(usedFraction * 100).round()}%',
                         style: const TextStyle(
@@ -366,7 +353,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
               const SizedBox(height: 30),
 
-              // --- Footer ---
               Center(
                 child: Column(
                   children: [
@@ -408,8 +394,6 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  // --- Actions --------------------------------------------------------------
-
   void _clearCache() {
     if (_storageUsedMb == 0) {
       _snack('There is nothing cached right now.');
@@ -417,7 +401,7 @@ class _SettingScreenState extends State<SettingScreen> {
     }
     final freed = _storageUsedMb;
     setState(() => _storageUsedMb = 0);
-    // Cache holds the recently-viewed list, so clear that too.
+
     AppState.of(context).clearRecentlyViewed();
     _snack('Cleared ${freed.round()} MB of cached imagery.');
   }
@@ -748,9 +732,7 @@ class _ChoiceRow extends StatelessWidget {
                     child: Text(
                       o,
                       style: TextStyle(
-                        color: o == value
-                            ? accent
-                            : AppColor.textPrimary,
+                        color: o == value ? accent : AppColor.textPrimary,
                         fontWeight: o == value
                             ? FontWeight.w800
                             : FontWeight.w500,
@@ -761,10 +743,7 @@ class _ChoiceRow extends StatelessWidget {
                 )
                 .toList(),
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 7,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
               decoration: BoxDecoration(
                 color: accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
@@ -809,7 +788,6 @@ class _ActionRow extends StatelessWidget {
   final String trailingText;
   final Color accent;
 
-  /// Null disables the row (used while an async action is in flight).
   final VoidCallback? onTap;
 
   @override

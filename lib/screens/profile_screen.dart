@@ -8,12 +8,6 @@ import 'package:rent_car/widgets/painters/aurora_background.dart';
 import 'package:rent_car/widgets/painters/glass_card.dart';
 import 'package:rent_car/widgets/painters/progress_ring.dart';
 
-/// Profile tab with live stats pulled from [AppState], an achievements rail and
-/// account option tiles.
-///
-/// Every account tile opens a real screen; nothing here is a stub. The profile
-/// data itself lives in [AppState] so edits made on [PersonalInfoScreen] and
-/// [DrivingLicenceScreen] are reflected here immediately.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -33,7 +27,6 @@ class ProfileScreen extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(20, 14, 20, 120),
             children: [
-              // --- Identity card ---
               GlassCard(
                 radius: AppColor.radiusPanel,
                 accent: AppColor.primary,
@@ -56,8 +49,9 @@ class ProfileScreen extends StatelessWidget {
                         child: CircleAvatar(
                           radius: 33,
                           backgroundColor: AppColor.surfaceHigh,
-                          backgroundImage:
-                              const AssetImage('assets/images/yasir.png'),
+                          backgroundImage: const AssetImage(
+                            'assets/images/yasir.png',
+                          ),
                           onBackgroundImageError: (_, _) {},
                           child: null,
                         ),
@@ -171,7 +165,6 @@ class ProfileScreen extends StatelessWidget {
 
               const SizedBox(height: 18),
 
-              // --- Live stats ---
               Row(
                 children: [
                   Expanded(
@@ -214,7 +207,6 @@ class ProfileScreen extends StatelessWidget {
 
               const SizedBox(height: 26),
 
-              // --- Experience level ring ---
               GlassCard(
                 radius: AppColor.radiusPanel,
                 accent: AppColor.secondary,
@@ -277,7 +269,7 @@ class ProfileScreen extends StatelessWidget {
                             state.totalRides >= 10
                                 ? 'You have unlocked every tier. Legend.'
                                 : '${10 - state.totalRides} more ride(s) to '
-                                    'reach the next tier.',
+                                      'reach the next tier.',
                             style: const TextStyle(
                               color: AppColor.textSecondary,
                               fontSize: 12,
@@ -293,7 +285,6 @@ class ProfileScreen extends StatelessWidget {
 
               const SizedBox(height: 26),
 
-              // --- Recently viewed ---
               if (recent.isNotEmpty) ...[
                 const _SectionLabel('RECENTLY VIEWED'),
                 const SizedBox(height: 12),
@@ -356,7 +347,6 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 26),
               ],
 
-              // --- Account options ---
               const _SectionLabel('ACCOUNT'),
               const SizedBox(height: 12),
               _OptionTile(
@@ -397,7 +387,6 @@ class ProfileScreen extends StatelessWidget {
 
               const SizedBox(height: 22),
 
-              // --- Logout ---
               GestureDetector(
                 onTap: () => _confirmLogout(context),
                 behavior: HitTestBehavior.opaque,
@@ -464,7 +453,6 @@ class ProfileScreen extends StatelessWidget {
     return 'Newcomer';
   }
 
-  /// Confirms before clearing the signed-in user's local data.
   static void _confirmLogout(BuildContext context) {
     showDialog<void>(
       context: context,

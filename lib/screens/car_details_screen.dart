@@ -11,8 +11,6 @@ import 'package:rent_car/widgets/painters/hero_banner_painter.dart';
 import 'package:rent_car/widgets/painters/progress_ring.dart';
 import 'package:rent_car/widgets/painters/speedometer_widget.dart';
 
-/// Full detail view for a single car with a painter-driven spec dashboard and
-/// the rental booking flow.
 class CarDetailsScreen extends StatefulWidget {
   const CarDetailsScreen({super.key, required this.car});
 
@@ -31,7 +29,9 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
 
   int get _rentalDays {
     if (_selectedDateRange == null) return 1;
-    return _selectedDateRange!.end.difference(_selectedDateRange!.start).inDays +
+    return _selectedDateRange!.end
+            .difference(_selectedDateRange!.start)
+            .inDays +
         1;
   }
 
@@ -99,8 +99,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
         car: car,
         booking: booking,
         onDone: () {
-          // Close the dialog, leave the details screen, then land the user on
-          // the Bookings tab so they can see the reservation they just made.
           Navigator.pop(dialogContext);
           Navigator.pop(context);
           MainWrapper.goToTab(MainWrapper.bookingsTab);
@@ -121,7 +119,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
         body: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-            // --- Header: back ... calendar + favourite ---
             SliverToBoxAdapter(
               child: SafeArea(
                 bottom: false,
@@ -134,11 +131,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                         onTap: () => Navigator.pop(context),
                       ),
                       const Spacer(),
-                      // Calendar and favourite sit together at the right edge,
-                      // both as bare circular icon buttons.
+
                       _RoundIconButton(
                         icon: Icons.calendar_month_rounded,
-                        color: hasRange ? AppColor.primary : AppColor.textPrimary,
+                        color: hasRange
+                            ? AppColor.primary
+                            : AppColor.textPrimary,
                         active: hasRange,
                         onTap: _openDatePicker,
                       ),
@@ -156,7 +154,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               ),
             ),
 
-            // --- Gallery ---
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(top: 20),
@@ -169,7 +166,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               ),
             ),
 
-            // --- Title block ---
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
@@ -254,7 +250,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               ),
             ),
 
-            // --- Performance dashboard: speedometer + rings ---
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 26, 20, 0),
@@ -295,8 +290,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                                 child: _RingStat(
                                   value: car.valueScore,
                                   label: 'Value',
-                                  display:
-                                      '${(car.valueScore * 100).round()}%',
+                                  display: '${(car.valueScore * 100).round()}%',
                                   icon: Icons.savings_rounded,
                                   accent: AppColor.primary,
                                 ),
@@ -321,7 +315,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               ),
             ),
 
-            // --- Spec stat bars ---
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
@@ -379,7 +372,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               ),
             ),
 
-            // --- Spec grid ---
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
@@ -445,13 +437,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               ),
             ),
 
-            // --- Rental period is picked from the chip in the header ---
-
             const SliverToBoxAdapter(child: SizedBox(height: 140)),
           ],
         ),
 
-        // --- Sticky booking bar ---
         bottomNavigationBar: _BookingBar(
           dailyPrice: car.price,
           rentalDays: _rentalDays,
@@ -462,10 +451,6 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
     );
   }
 }
-
-// -----------------------------------------------------------------------------
-// Gallery
-// -----------------------------------------------------------------------------
 
 class _Gallery extends StatelessWidget {
   const _Gallery({
@@ -502,7 +487,6 @@ class _Gallery extends StatelessWidget {
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        // Decorative dashed ring behind the car.
                         Positioned(
                           child: SizedBox(
                             width: 230,
@@ -523,9 +507,7 @@ class _Gallery extends StatelessWidget {
                               images[i],
                               fit: BoxFit.contain,
                               filterQuality: FilterQuality.medium,
-                              // The gallery pages are a pager, so each decoded
-                              // frame is retained; decoding at paint size keeps
-                              // swiping smooth instead of thrashing the cache.
+
                               cacheWidth: (c.maxWidth * 3).round(),
                               errorBuilder: (ctx, err, stack) => CustomPaint(
                                 size: const Size(230, 100),
@@ -538,7 +520,7 @@ class _Gallery extends StatelessWidget {
                             ),
                           ),
                         ),
-                        // Image counter
+
                         Positioned(
                           right: 14,
                           top: 14,
@@ -607,8 +589,6 @@ class _GalleryBackdropPainter extends CustomPainter {
     final accent = AppColor.accentFor(index);
     final rect = Offset.zero & size;
 
-    // Flat light panel - no gradient. A faint accent tint distinguishes the
-    // gallery from the page without introducing a colour transition.
     canvas.drawRect(
       rect,
       Paint()
@@ -618,8 +598,6 @@ class _GalleryBackdropPainter extends CustomPainter {
         ),
     );
 
-    // A soft contact shadow under the car, so it sits on the surface rather
-    // than floating. Drawn as a blurred flat ellipse.
     final center = Offset(size.width * 0.5, size.height * 0.80);
     final shadowRect = Rect.fromCenter(
       center: center,
@@ -633,7 +611,6 @@ class _GalleryBackdropPainter extends CustomPainter {
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10),
     );
 
-    // Hairline border.
     canvas.drawRect(
       rect.deflate(0.7),
       Paint()
@@ -647,10 +624,6 @@ class _GalleryBackdropPainter extends CustomPainter {
   bool shouldRepaint(covariant _GalleryBackdropPainter oldDelegate) =>
       oldDelegate.index != index;
 }
-
-// -----------------------------------------------------------------------------
-// Building blocks
-// -----------------------------------------------------------------------------
 
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel(this.text);
@@ -696,8 +669,6 @@ class _RoundIconButton extends StatelessWidget {
   final VoidCallback onTap;
   final Color color;
 
-  /// Tints the button blue to signal that the thing it controls has a value
-  /// set - used by the calendar button once a rental range is chosen.
   final bool active;
 
   @override
@@ -748,7 +719,7 @@ class _RingStat extends StatelessWidget {
           value: value.clamp(0.0, 1.0),
           size: 62,
           strokeWidth: 5,
-          // Blue only - the ring used to lerp toward the teal secondary.
+
           gradientColors: [accent, accent],
           child: Icon(icon, size: 19, color: accent),
         ),
@@ -775,7 +746,6 @@ class _RingStat extends StatelessWidget {
   }
 }
 
-/// A single spec cell with an accent-tinted icon chip.
 class SpecTile extends StatelessWidget {
   const SpecTile({
     super.key,
@@ -867,8 +837,6 @@ class _BookingBar extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
           child: Row(
             children: [
-              // Flexible so the breakdown line ("$428 x 3 d") yields rather
-              // than pushing the Book button off the edge on narrow screens.
               Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -969,10 +937,6 @@ class _BookingBar extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Booking sheet + success dialog
-// -----------------------------------------------------------------------------
-
 class _BookingSheet extends StatelessWidget {
   const _BookingSheet({
     required this.car,
@@ -1059,7 +1023,10 @@ class _BookingSheet extends StatelessWidget {
           const SizedBox(height: 22),
           const _SheetDivider(),
           const SizedBox(height: 18),
-          _SummaryRow(label: 'Daily rate', value: '\$${car.price.toStringAsFixed(0)}'),
+          _SummaryRow(
+            label: 'Daily rate',
+            value: '\$${car.price.toStringAsFixed(0)}',
+          ),
           _SummaryRow(label: 'Rental days', value: '$rentalDays'),
           _SummaryRow(
             label: 'Period',
@@ -1189,9 +1156,7 @@ class _SuccessDialog extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColor.surface,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: AppColor.success.withValues(alpha: 0.35),
-          ),
+          border: Border.all(color: AppColor.success.withValues(alpha: 0.35)),
           boxShadow: AppColor.glow(AppColor.success, opacity: 0.25, blur: 34),
         ),
         child: Column(
@@ -1230,10 +1195,7 @@ class _SuccessDialog extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 11,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
               decoration: BoxDecoration(
                 color: AppColor.surfaceHigh,
                 borderRadius: BorderRadius.circular(14),

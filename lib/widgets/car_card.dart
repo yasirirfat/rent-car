@@ -4,28 +4,6 @@ import 'package:rent_car/core/app_state.dart';
 import 'package:rent_car/model/car_model.dart';
 import 'package:rent_car/widgets/car_card_painter.dart';
 
-/// Vertical car card for the home list, styled after the reference design.
-///
-/// Layout is a bounded column so nothing can collide:
-///
-/// ```
-///  ┌───────────────────────────────────────────────┐
-///  │  (icon)  718 Cayman            ★ 4.9 (32)     │  <- identity row
-///  │          Automatic · 2 Seats            [♡]   │
-///  │                                               │
-///  │  ┌─────────────────────────────────────────┐  │
-///  │  │            car image                   │  │  <- FIXED image box
-///  │  │        (identical on every card)       │  │     240 x 104
-///  │  └─────────────────────────────────────────┘  │
-///  │                                               │
-///  │  $190 /day              [  ⚖  Compare  ]      │  <- action row
-///  └───────────────────────────────────────────────┘
-/// ```
-///
-/// The image box is a *fixed* `SizedBox` shared by every card, and the asset is
-/// drawn with `BoxFit.contain` inside it. That is what guarantees all cars look
-/// the same size regardless of the source PNG's dimensions - no card can be
-/// taller than another and no car is ever stretched.
 class CarCard extends StatelessWidget {
   const CarCard({
     super.key,
@@ -38,7 +16,6 @@ class CarCard extends StatelessWidget {
   final VoidCallback onTap;
   final Color accent;
 
-  /// Uniform image box. Every card uses exactly these dimensions.
   static const double imageBoxWidth = 240;
   static const double imageBoxHeight = 104;
 
@@ -103,10 +80,6 @@ class CarCard extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Identity row: category icon, name, rating / spec subtitle, favourite
-// -----------------------------------------------------------------------------
-
 class _IdentityRow extends StatelessWidget {
   const _IdentityRow({
     required this.car,
@@ -125,8 +98,6 @@ class _IdentityRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Icon container - a tinted square that gives the card a clear,
-        // recognisable anchor at the top-left, as in the reference.
         Container(
           width: 44,
           height: 44,
@@ -137,7 +108,7 @@ class _IdentityRow extends StatelessWidget {
           child: Icon(_iconFor(car), size: 22, color: accent),
         ),
         const SizedBox(width: 12),
-        // Name + subtitle.
+
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,11 +171,8 @@ class _IdentityRow extends StatelessWidget {
     );
   }
 
-  /// A very light wash of the accent, safe for a dark glyph on top.
   static Color _tint(Color accent) => accent.withValues(alpha: 0.10);
 
-  /// Category drives the glyph, so the container is meaningful rather than
-  /// purely decorative.
   static IconData _iconFor(CarModel car) {
     switch (car.category) {
       case CarCategory.suv:
@@ -220,15 +188,6 @@ class _IdentityRow extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Image box - uniform dimensions across every card
-// -----------------------------------------------------------------------------
-
-/// A fixed-size container holding the car photograph.
-///
-/// `SizedBox` pins the outer dimensions and `BoxFit.contain` fits the asset
-/// inside without cropping or stretching, so a wide photo and a tall photo both
-/// render at the same visual scale and every card is exactly the same height.
 class _ImageBox extends StatelessWidget {
   const _ImageBox();
 
@@ -251,11 +210,6 @@ class _CarImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Ask the decoder for an image at (roughly) the size we will actually
-        // paint it. The car PNGs are large; decoding them at full resolution
-        // and then downscaling on every scroll frame is one of the biggest
-        // costs in the list, and `cacheWidth` removes it entirely. The 3x
-        // multiplier keeps the bitmap crisp on high-DPI screens.
         final cacheWidth = (constraints.maxWidth * 3).round();
 
         return Image.asset(
@@ -278,15 +232,11 @@ class _CarImage extends StatelessWidget {
     );
   }
 
-  /// Reads the path from the nearest [CarImageScope]; falls back to empty.
   static String _carImagePathOf(BuildContext context) {
     return CarImageScope.maybeOf(context)?.path ?? '';
   }
 }
 
-/// Supplies the image path to [_ImageBox] without threading the model through
-/// every intermediate widget. A plain [InheritedWidget] keeps this dependency
-/// free - no provider package needed.
 class CarImageScope extends InheritedWidget {
   const CarImageScope({super.key, required this.path, required super.child});
 
@@ -298,10 +248,6 @@ class CarImageScope extends InheritedWidget {
   @override
   bool updateShouldNotify(CarImageScope oldWidget) => oldWidget.path != path;
 }
-
-// -----------------------------------------------------------------------------
-// Action row: price on the left, Compare as the primary action on the right
-// -----------------------------------------------------------------------------
 
 class _ActionRow extends StatelessWidget {
   const _ActionRow({
@@ -318,14 +264,11 @@ class _ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // On a very narrow screen the price and a full labelled button will not
-    // both fit. The price block yields first, then the label drops.
     final width = MediaQuery.sizeOf(context).width;
     final compact = width < 360;
 
     return Row(
       children: [
-        // Price block.
         Flexible(
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -360,8 +303,7 @@ class _ActionRow extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        // Primary action: a solid, labelled Compare button - the most visually
-        // dominant control on the card after the price.
+
         CompareActionButton(
           active: isComparing,
           onTap: onCompare,
@@ -373,15 +315,6 @@ class _ActionRow extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Compare button - the card's primary action
-// -----------------------------------------------------------------------------
-
-/// Labelled compare toggle.
-///
-/// Inactive: solid white with a visible outline, so it reads as a real button
-/// rather than a text link.
-/// Active: filled solid blue with a check - unmistakably "on".
 class CompareActionButton extends StatelessWidget {
   const CompareActionButton({
     super.key,
@@ -412,7 +345,9 @@ class CompareActionButton extends StatelessWidget {
             color: active ? accent : AppColor.strokeStrong,
             width: 1.4,
           ),
-          boxShadow: active ? AppColor.glow(accent, opacity: 0.30, blur: 12) : null,
+          boxShadow: active
+              ? AppColor.glow(accent, opacity: 0.30, blur: 12)
+              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -446,11 +381,6 @@ class CompareActionButton extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Shared building blocks
-// -----------------------------------------------------------------------------
-
-/// A thin horizontal rule used to separate the image from the action row.
 class _Hairline extends StatelessWidget {
   const _Hairline();
 
@@ -460,10 +390,6 @@ class _Hairline extends StatelessWidget {
   }
 }
 
-/// Wraps a child so it scales down slightly while held.
-///
-/// Used on the primary interactive controls. The motion is deliberately tiny -
-/// it should register as "the app heard me", not as an animation.
 class _Pressable extends StatefulWidget {
   const _Pressable({required this.child, required this.onTap});
 
@@ -495,11 +421,6 @@ class _PressableState extends State<_Pressable> {
   }
 }
 
-/// Compact card used by the home screen's grid layout.
-///
-/// Shares [CarCard]'s image box dimensions so the two layouts stay visually
-/// consistent, and reuses [CompareActionButton] so the primary action looks and
-/// behaves identically in both.
 class CarGridCard extends StatelessWidget {
   const CarGridCard({
     super.key,
@@ -530,7 +451,6 @@ class CarGridCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Name + favourite.
                 Row(
                   children: [
                     Expanded(
@@ -565,7 +485,7 @@ class CarGridCard extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                // Image - the same fixed box as the list card.
+
                 Expanded(
                   child: Center(
                     child: SizedBox(
@@ -627,7 +547,6 @@ class CarGridCard extends StatelessWidget {
   }
 }
 
-/// Rounded-square favourite toggle with a clear active state.
 class _FavButton extends StatelessWidget {
   const _FavButton({required this.active, required this.onTap, this.size = 38});
 

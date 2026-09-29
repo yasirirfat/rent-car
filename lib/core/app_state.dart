@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rent_car/model/car_model.dart';
 
-/// A single confirmed rental.
 class Booking {
   Booking({
     required this.car,
@@ -17,12 +16,10 @@ class Booking {
   final double dailyRate;
   final String confirmationCode;
 
-  /// Inclusive day count.
   int get days => end.difference(start).inDays + 1;
 
   double get total => dailyRate * days;
 
-  /// Simple derived status based on today's date.
   BookingStatus get status {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -33,7 +30,6 @@ class Booking {
     return BookingStatus.active;
   }
 
-  /// Human readable countdown / summary.
   String get timelineLabel {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -43,10 +39,14 @@ class Booking {
     switch (status) {
       case BookingStatus.upcoming:
         final diff = s.difference(today).inDays;
-        return diff == 0 ? 'Starts today' : 'Starts in $diff day${diff == 1 ? '' : 's'}';
+        return diff == 0
+            ? 'Starts today'
+            : 'Starts in $diff day${diff == 1 ? '' : 's'}';
       case BookingStatus.active:
         final left = e.difference(today).inDays;
-        return left == 0 ? 'Ends today' : 'Ends in $left day${left == 1 ? '' : 's'}';
+        return left == 0
+            ? 'Ends today'
+            : 'Ends in $left day${left == 1 ? '' : 's'}';
       case BookingStatus.completed:
         return 'Returned successfully';
     }
@@ -64,8 +64,6 @@ enum BookingStatus {
   final Color color;
 }
 
-/// The user's editable profile, held in [AppState] so the profile screen can
-/// actually change it and the rest of the app can read it back.
 class UserProfile {
   UserProfile({
     this.name = 'Yasir Ahmed',
@@ -83,7 +81,6 @@ class UserProfile {
   String licenceNumber;
   DateTime? licenceExpiry;
 
-  /// Two-letter monogram used by the avatar.
   String get initials {
     final parts = name.trim().split(RegExp(r'\s+'));
     if (parts.isEmpty || parts.first.isEmpty) return '?';
@@ -92,7 +89,6 @@ class UserProfile {
   }
 }
 
-/// A card the user has saved for paying rentals.
 class PaymentMethod {
   PaymentMethod({
     required this.id,
@@ -111,11 +107,6 @@ class PaymentMethod {
   String get display => '$brand ···· $last4';
 }
 
-/// Lightweight app-wide state.
-///
-/// Deliberately dependency free - an [InheritedNotifier] over a [ChangeNotifier]
-/// so favourites, bookings, settings and the profile survive tab switches
-/// without pulling in a state management package.
 class AppState extends ChangeNotifier {
   static AppState of(BuildContext context) {
     final state = context
@@ -128,10 +119,6 @@ class AppState extends ChangeNotifier {
   final Set<String> _favouriteIds = {};
   final List<Booking> _bookings = [];
   final Set<String> _recentlyViewedIds = {};
-
-  // --- Settings -------------------------------------------------------------
-  // Every value here is read by SettingsScreen and written back through the
-  // setters below, so the toggles actually hold state across rebuilds.
 
   bool _pushNotifications = true;
   bool _promoEmails = false;
@@ -183,16 +170,12 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Clears the recently-viewed list. Called by the settings screen's
-  /// "Clear app cache" action, since that list is what the cache holds.
   void clearRecentlyViewed() {
     if (_recentlyViewedIds.isEmpty) return;
     _recentlyViewedIds.clear();
     notifyListeners();
   }
 
-  /// Resets every preference back to its default. Backs the "Reset
-  /// preferences" action so that button does something real.
   void resetPreferences() {
     _pushNotifications = true;
     _promoEmails = false;
@@ -203,8 +186,6 @@ class AppState extends ChangeNotifier {
     _recentlyViewedIds.clear();
     notifyListeners();
   }
-
-  // --- Profile --------------------------------------------------------------
 
   final UserProfile profile = UserProfile();
 
@@ -278,7 +259,6 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Clears the signed-in user's local data. Used by "Log out".
   void signOut() {
     _favouriteIds.clear();
     _bookings.clear();
@@ -286,8 +266,6 @@ class AppState extends ChangeNotifier {
     _compareIds.clear();
     notifyListeners();
   }
-
-  // --- Favourites -----------------------------------------------------------
 
   Set<String> get favouriteIds => Set.unmodifiable(_favouriteIds);
 
@@ -305,14 +283,12 @@ class AppState extends ChangeNotifier {
   List<CarModel> favouritesFrom(List<CarModel> all) =>
       all.where((c) => _favouriteIds.contains(c.id)).toList();
 
-  // --- Recently viewed ------------------------------------------------------
-
   List<String> get recentlyViewedIds => List.unmodifiable(_recentlyViewedIds);
 
   void markViewed(CarModel car) {
     _recentlyViewedIds.remove(car.id);
     _recentlyViewedIds.add(car.id);
-    // Keep only the last 6.
+
     if (_recentlyViewedIds.length > 6) {
       _recentlyViewedIds.remove(_recentlyViewedIds.first);
     }
@@ -329,9 +305,6 @@ class AppState extends ChangeNotifier {
         .toList();
   }
 
-  // --- Comparison -----------------------------------------------------------
-
-  /// Cars queued for side-by-side comparison. Capped at [maxCompare].
   static const int maxCompare = 4;
 
   final List<String> _compareIds = [];
@@ -344,10 +317,6 @@ class AppState extends ChangeNotifier {
 
   bool get canCompareMore => _compareIds.length < maxCompare;
 
-  /// Adds or removes [car] from the comparison set.
-  ///
-  /// Returns false when the set is already full and the car was not in it, so
-  /// the caller can surface a message.
   bool toggleCompare(CarModel car) {
     if (_compareIds.remove(car.id)) {
       notifyListeners();
@@ -367,13 +336,8 @@ class AppState extends ChangeNotifier {
 
   List<CarModel> compareCarsFrom(List<CarModel> all) {
     final byId = {for (final c in all) c.id: c};
-    return _compareIds
-        .map((id) => byId[id])
-        .whereType<CarModel>()
-        .toList();
+    return _compareIds.map((id) => byId[id]).whereType<CarModel>().toList();
   }
-
-  // --- Bookings -------------------------------------------------------------
 
   List<Booking> get bookings => List.unmodifiable(_bookings);
 
@@ -382,11 +346,9 @@ class AppState extends ChangeNotifier {
   double get totalSpend =>
       _bookings.fold(0.0, (sum, booking) => sum + booking.total);
 
-  int get activeCount => _bookings
-      .where((b) => b.status != BookingStatus.completed)
-      .length;
+  int get activeCount =>
+      _bookings.where((b) => b.status != BookingStatus.completed).length;
 
-  /// Confirms a rental and returns the created record.
   Booking addBooking({
     required CarModel car,
     required DateTime start,
@@ -422,22 +384,6 @@ class AppState extends ChangeNotifier {
   }
 }
 
-/// Provides [AppState] to the subtree.
-///
-/// **Performance note.** [updateShouldNotify] must return `false`.
-///
-/// [InheritedNotifier] rebuilds *every* dependant whenever `updateShouldNotify`
-/// reports a change, and it calls this method on every single
-/// `notifyListeners()`. Returning `true` therefore marks every caller of
-/// [AppState.of] dirty - and because each tab is a direct child of the
-/// [_MainWrapperState]'s `IndexedStack`, that means the whole app rebuilds on
-/// every favourite toggle, every search keystroke and every scroll-driven
-/// `notifyListeners()`. That is the dominant source of the scroll and tap lag.
-///
-/// The notifier itself is final and never swapped, so the inherited value can
-/// never actually change. Listeners are still notified correctly: the
-/// [InheritedNotifier] element subscribes to the [ChangeNotifier] directly and
-/// rebuilds its dependants when it fires, independently of this method.
 class AppStateScope extends InheritedNotifier<AppState> {
   const AppStateScope({
     super.key,

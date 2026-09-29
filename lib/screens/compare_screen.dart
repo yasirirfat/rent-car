@@ -6,22 +6,6 @@ import 'package:rent_car/model/car_model.dart';
 import 'package:rent_car/widgets/car_card.dart' show CompareActionButton;
 import 'package:rent_car/widgets/painters/comparison_chart.dart';
 
-/// Side-by-side comparison of the cars queued via [AppState.toggleCompare].
-///
-/// Structure, top to bottom:
-///
-///   1. App bar          - back, title, live count, clear.
-///   2. Column headers   - a card per car, each colour-coded so the same car is
-///                         recognisable in every chart and every table row.
-///   3. Metric charts    - three labelled bars (speed / price / performance).
-///   4. Spec matrix      - price, engine, top speed, mileage, fuel, seats,
-///                         drivetrain, airbags. The winner of each numeric row
-///                         is highlighted with a `BEST` tag.
-///   5. Verdict          - best overall / fastest / best value.
-///
-/// The car header strip is rendered twice: once as a normal sliver and once as
-/// a pinned sliver that fades in on scroll. That way the colour legend is never
-/// more than a glance away when you are deep in the spec matrix.
 class CompareScreen extends StatelessWidget {
   const CompareScreen({super.key});
 
@@ -54,7 +38,6 @@ class _ComparisonBody extends StatelessWidget {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
-        // --- 1. App bar -----------------------------------------------------
         SliverAppBar(
           pinned: true,
           backgroundColor: AppColor.canvas,
@@ -140,7 +123,6 @@ class _ComparisonBody extends StatelessWidget {
           ],
         ),
 
-        // --- 2. Column headers (colour legend) ------------------------------
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -148,7 +130,6 @@ class _ComparisonBody extends StatelessWidget {
           ),
         ),
 
-        // --- 3. Metric charts -----------------------------------------------
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 26, 16, 0),
@@ -191,12 +172,12 @@ class _ComparisonBody extends StatelessWidget {
                       for (var i = 0; i < cars.length; i++)
                         ComparisonEntry(
                           label: _short(cars[i].model),
-                          // Cheaper renders taller, so invert the ratio.
-                          value:
-                              (1 - cars[i].price / _maxPrice(cars))
-                                  .clamp(0.06, 1.0),
-                          valueLabel:
-                              '\$${cars[i].price.toStringAsFixed(0)}',
+
+                          value: (1 - cars[i].price / _maxPrice(cars)).clamp(
+                            0.06,
+                            1.0,
+                          ),
+                          valueLabel: '\$${cars[i].price.toStringAsFixed(0)}',
                           color: _accentFor(i),
                         ),
                     ],
@@ -230,7 +211,6 @@ class _ComparisonBody extends StatelessWidget {
           ),
         ),
 
-        // --- 4. Spec matrix --------------------------------------------------
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 28, 16, 0),
@@ -249,7 +229,6 @@ class _ComparisonBody extends StatelessWidget {
           ),
         ),
 
-        // --- 5. Verdict ------------------------------------------------------
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
@@ -267,17 +246,12 @@ class _ComparisonBody extends StatelessWidget {
 
   static Color _accentFor(int index) => AppColor.accentFor(index);
 
-  /// Trims a long model name so it fits under a chart bar.
   static String _short(String model) {
     if (model.length <= 11) return model;
     final first = model.split(' ').first;
     return first.length <= 11 ? first : '${first.substring(0, 10)}.';
   }
 }
-
-// -----------------------------------------------------------------------------
-// Shared bits
-// -----------------------------------------------------------------------------
 
 class _RoundButton extends StatelessWidget {
   const _RoundButton({required this.icon, required this.onTap});
@@ -356,7 +330,6 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
-/// Flat elevated panel used to frame each chart.
 class _ChartPanel extends StatelessWidget {
   const _ChartPanel({required this.child, required this.accent});
 
@@ -377,10 +350,6 @@ class _ChartPanel extends StatelessWidget {
     );
   }
 }
-
-// -----------------------------------------------------------------------------
-// Column headers - one card per car, colour-coded
-// -----------------------------------------------------------------------------
 
 class _CarHeaderRow extends StatelessWidget {
   const _CarHeaderRow({required this.cars, required this.height});
@@ -424,7 +393,6 @@ class _CarHeader extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Accent spine so the colour legend is obvious.
           Container(
             height: 4,
             decoration: BoxDecoration(
@@ -485,11 +453,6 @@ class _CarHeader extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Spec matrix
-// -----------------------------------------------------------------------------
-
-/// A definition row: the label, a value per car, and how to decide the winner.
 class _Spec {
   const _Spec({
     required this.label,
@@ -504,7 +467,6 @@ class _Spec {
   final IconData icon;
   final List<String> values;
 
-  /// Numeric form of [values], used to decide the winner. Null = no winner.
   final List<double>? raw;
   final bool higherIsBetter;
   final Color accent;
@@ -521,9 +483,7 @@ class _SpecMatrix extends StatelessWidget {
       _Spec(
         label: 'Price / day',
         icon: Icons.payments_rounded,
-        values: [
-          for (final c in cars) '\$${c.price.toStringAsFixed(0)}',
-        ],
+        values: [for (final c in cars) '\$${c.price.toStringAsFixed(0)}'],
         raw: [for (final c in cars) c.price],
         higherIsBetter: false,
         accent: AppColor.amber,
@@ -610,7 +570,6 @@ class _SpecBlock extends StatelessWidget {
   final bool isFirst;
   final bool isLast;
 
-  /// Index of the winning column, or -1 when this row has no numeric winner.
   int _winner() {
     final raw = spec.raw;
     if (raw == null || raw.isEmpty) return -1;
@@ -623,7 +582,7 @@ class _SpecBlock extends StatelessWidget {
         index = i;
       }
     }
-    // All equal - nothing to celebrate.
+
     if (raw.every((v) => v == best)) return -1;
     return index;
   }
@@ -643,12 +602,15 @@ class _SpecBlock extends StatelessWidget {
             color: AppColor.stroke,
           ),
         Padding(
-          padding: EdgeInsets.fromLTRB(16, isFirst ? 16 : 14, 16, isLast ? 16 : 14),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            isFirst ? 16 : 14,
+            16,
+            isLast ? 16 : 14,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Row label with an icon, sitting above the values so it never
-              // squeezes the columns on a narrow screen.
               Row(
                 children: [
                   Icon(spec.icon, size: 13, color: spec.accent),
@@ -666,7 +628,7 @@ class _SpecBlock extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
-              // One cell per car.
+
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -723,7 +685,6 @@ class _SpecCell extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // A tiny colour dot keeps the cell tied to its column.
           Container(
             width: 5,
             height: 5,
@@ -761,10 +722,6 @@ class _SpecCell extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Verdict
-// -----------------------------------------------------------------------------
-
 class _Verdict extends StatelessWidget {
   const _Verdict({required this.cars});
 
@@ -772,21 +729,23 @@ class _Verdict extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Pick the car with the best blend of performance and value.
     final scored = [...cars]
       ..sort(
-        (a, b) => (b.performanceScore + b.valueScore)
-            .compareTo(a.performanceScore + a.valueScore),
+        (a, b) => (b.performanceScore + b.valueScore).compareTo(
+          a.performanceScore + a.valueScore,
+        ),
       );
     final best = scored.first;
 
-    final fastest = ([...cars]
-          ..sort((a, b) => b.topSpeedKmh.compareTo(a.topSpeedKmh)))
-        .first;
-    final cheapest = ([...cars]..sort((a, b) => a.price.compareTo(b.price)))
-        .first;
-    final lowestMileage = ([...cars]..sort((a, b) => a.mileageKm.compareTo(b.mileageKm)))
-        .first;
+    final fastest = ([
+      ...cars,
+    ]..sort((a, b) => b.topSpeedKmh.compareTo(a.topSpeedKmh))).first;
+    final cheapest = ([
+      ...cars,
+    ]..sort((a, b) => a.price.compareTo(b.price))).first;
+    final lowestMileage = ([
+      ...cars,
+    ]..sort((a, b) => a.mileageKm.compareTo(b.mileageKm))).first;
 
     return Container(
       decoration: BoxDecoration(
@@ -948,10 +907,6 @@ class _VerdictLine extends StatelessWidget {
     );
   }
 }
-
-// -----------------------------------------------------------------------------
-// Empty state
-// -----------------------------------------------------------------------------
 
 class _NotEnough extends StatelessWidget {
   const _NotEnough({required this.cars});

@@ -4,12 +4,6 @@ import 'package:rent_car/core/app_state.dart';
 import 'package:rent_car/screens/car_details_screen.dart';
 import 'package:rent_car/widgets/painters/glass_card.dart';
 
-// =============================================================================
-// Shared chrome
-// =============================================================================
-
-/// Standard scaffold used by every account sub-screen so they share one
-/// header treatment and one background.
 class AccountScaffold extends StatelessWidget {
   const AccountScaffold({
     super.key,
@@ -33,7 +27,6 @@ class AccountScaffold extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 10, 20, 0),
               child: Row(
@@ -107,7 +100,6 @@ class AccountScaffold extends StatelessWidget {
   }
 }
 
-/// A small reusable text field styled for the dark surfaces.
 class AccountField extends StatelessWidget {
   const AccountField({
     super.key,
@@ -175,7 +167,6 @@ class AccountField extends StatelessWidget {
   }
 }
 
-/// Primary full-width action button.
 class AccountButton extends StatelessWidget {
   const AccountButton({
     super.key,
@@ -225,10 +216,6 @@ class AccountButton extends StatelessWidget {
   }
 }
 
-// =============================================================================
-// 1. Personal information
-// =============================================================================
-
 class PersonalInfoScreen extends StatefulWidget {
   const PersonalInfoScreen({super.key});
 
@@ -246,8 +233,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // AppState is an inherited widget, so it can only be read once the
-    // dependencies are resolved - not in initState.
+
     if (_seeded) return;
     _seeded = true;
     final p = AppState.of(context).profile;
@@ -332,10 +318,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   }
 }
 
-// =============================================================================
-// 2. Payment methods
-// =============================================================================
-
 class PaymentMethodsScreen extends StatefulWidget {
   const PaymentMethodsScreen({super.key});
 
@@ -388,8 +370,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
               padding: const EdgeInsets.only(bottom: 12),
               child: _PaymentTile(
                 method: method,
-                onMakeDefault: () =>
-                    state.makeDefaultPaymentMethod(method.id),
+                onMakeDefault: () => state.makeDefaultPaymentMethod(method.id),
                 onDelete: () => _confirmDelete(state, method),
               ),
             ),
@@ -659,9 +640,7 @@ class _AddCardSheetState extends State<_AddCardSheet> {
       decoration: const BoxDecoration(
         color: AppColor.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
-        border: Border(
-          top: BorderSide(color: AppColor.strokeStrong),
-        ),
+        border: Border(top: BorderSide(color: AppColor.strokeStrong)),
       ),
       padding: const EdgeInsets.fromLTRB(22, 14, 22, 26),
       child: Column(
@@ -689,7 +668,7 @@ class _AddCardSheetState extends State<_AddCardSheet> {
             ),
           ),
           const SizedBox(height: 18),
-          // Brand selector.
+
           Row(
             children: [
               for (final brand in const ['Visa', 'Mastercard', 'Amex'])
@@ -777,10 +756,6 @@ class _AddCardSheetState extends State<_AddCardSheet> {
   }
 }
 
-// =============================================================================
-// 3. Rental history
-// =============================================================================
-
 class RentalHistoryScreen extends StatelessWidget {
   const RentalHistoryScreen({super.key});
 
@@ -835,11 +810,7 @@ class RentalHistoryScreen extends StatelessWidget {
                     accent: AppColor.amber,
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: 34,
-                  color: AppColor.stroke,
-                ),
+                Container(width: 1, height: 34, color: AppColor.stroke),
                 Expanded(
                   child: _SummaryBlock(
                     value: '\$${state.totalSpend.toStringAsFixed(0)}',
@@ -847,11 +818,7 @@ class RentalHistoryScreen extends StatelessWidget {
                     accent: AppColor.success,
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: 34,
-                  color: AppColor.stroke,
-                ),
+                Container(width: 1, height: 34, color: AppColor.stroke),
                 Expanded(
                   child: _SummaryBlock(
                     value: '${state.activeCount}',
@@ -995,8 +962,18 @@ class RentalHistoryScreen extends StatelessWidget {
 
   static String _fmt(DateTime d) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${d.day} ${months[d.month - 1]}';
   }
@@ -1041,10 +1018,6 @@ class _SummaryBlock extends StatelessWidget {
   }
 }
 
-// =============================================================================
-// 4. Driving licence
-// =============================================================================
-
 class DrivingLicenceScreen extends StatefulWidget {
   const DrivingLicenceScreen({super.key});
 
@@ -1080,7 +1053,6 @@ class _DrivingLicenceScreenState extends State<DrivingLicenceScreen> {
       subtitle: 'Verification',
       accent: AppColor.success,
       children: [
-        // Status card
         GlassCard(
           radius: 20,
           accent: AppColor.success,
@@ -1142,7 +1114,7 @@ class _DrivingLicenceScreenState extends State<DrivingLicenceScreen> {
                 keyboardType: TextInputType.text,
               ),
               const SizedBox(height: 16),
-              // Expiry picker as a tappable field.
+
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1245,9 +1217,9 @@ class _DrivingLicenceScreenState extends State<DrivingLicenceScreen> {
           ),
         ),
         child: MediaQuery(
-          data: MediaQuery.of(pickerContext).copyWith(
-            textScaler: TextScaler.noScaling,
-          ),
+          data: MediaQuery.of(
+            pickerContext,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: child!,
         ),
       ),
@@ -1257,16 +1229,22 @@ class _DrivingLicenceScreenState extends State<DrivingLicenceScreen> {
 
   static String _fmtLong(DateTime d) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return '${d.day} ${months[d.month - 1]} ${d.year}';
   }
 }
-
-// =============================================================================
-// 5. Help & support
-// =============================================================================
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -1306,7 +1284,6 @@ class HelpSupportScreen extends StatelessWidget {
       subtitle: 'Support',
       accent: AppColor.info,
       children: [
-        // Contact row
         GlassCard(
           radius: 20,
           padding: const EdgeInsets.all(18),
@@ -1380,10 +1357,8 @@ class HelpSupportScreen extends StatelessWidget {
                     child: _ContactButton(
                       icon: Icons.mail_outline_rounded,
                       label: 'Email',
-                      onTap: () => _snack(
-                        context,
-                        'Opening support@rentcar.example…',
-                      ),
+                      onTap: () =>
+                          _snack(context, 'Opening support@rentcar.example…'),
                     ),
                   ),
                 ],

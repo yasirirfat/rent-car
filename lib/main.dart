@@ -16,7 +16,7 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      // Light page, so the status bar glyphs must be dark.
+
       statusBarIconBrightness: Brightness.dark,
       systemNavigationBarColor: AppColor.surface,
       systemNavigationBarIconBrightness: Brightness.dark,
@@ -56,10 +56,7 @@ class _RentCarAppState extends State<RentCarApp> {
   }
 
   ThemeData _buildTheme() {
-    final base = ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.light,
-    );
+    final base = ThemeData(useMaterial3: true, brightness: Brightness.light);
 
     return base.copyWith(
       scaffoldBackgroundColor: AppColor.canvas,
@@ -107,36 +104,25 @@ class _RentCarAppState extends State<RentCarApp> {
           fontWeight: FontWeight.w600,
         ),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
   }
 }
 
-/// Container that owns the bottom navigation and swaps between screens.
-///
-/// The active tab is mirrored into a [ValueNotifier] so pushed routes (the car
-/// details screen) can jump the user to another tab — for example straight to
-/// Bookings after a successful reservation.
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key, this.initialTab = 0});
 
   final int initialTab;
 
-  /// Tab indices, kept as named constants so callers do not hardcode numbers.
   static const int homeTab = 0;
   static const int savedTab = 1;
   static const int bookingsTab = 2;
   static const int profileTab = 3;
   static const int settingsTab = 4;
 
-  /// Lets any descendant request a tab change. Registered by the active
-  /// [MainWrapper]; null when no tab container is mounted.
   static final ValueNotifier<int?> requestedTab = ValueNotifier<int?>(null);
 
-  /// Switches the enclosing [MainWrapper] to [index].
   static void goToTab(int index) {
     requestedTab.value = index;
   }
@@ -210,7 +196,6 @@ class _MainWrapperState extends State<MainWrapper> {
   }
 }
 
-/// Removes the default overscroll glow to keep the dark UI clean.
 class _NoGlowScrollBehavior extends MaterialScrollBehavior {
   const _NoGlowScrollBehavior();
 

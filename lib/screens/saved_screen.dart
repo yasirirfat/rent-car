@@ -7,7 +7,6 @@ import 'package:rent_car/widgets/car_card.dart';
 import 'package:rent_car/widgets/painters/aurora_background.dart';
 import 'package:rent_car/widgets/painters/glass_card.dart';
 
-/// Saved (favourites) tab plus the recently viewed rail.
 class SavedScreen extends StatelessWidget {
   const SavedScreen({super.key});
 
@@ -56,7 +55,6 @@ class SavedScreen extends StatelessWidget {
                 ),
               ),
 
-              // --- Recently viewed rail ---
               if (recent.isNotEmpty)
                 SliverToBoxAdapter(
                   child: Padding(
@@ -91,8 +89,7 @@ class SavedScreen extends StatelessWidget {
                                 onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        CarDetailsScreen(car: car),
+                                    builder: (_) => CarDetailsScreen(car: car),
                                   ),
                                 ),
                                 child: GlassCard(
@@ -113,11 +110,11 @@ class SavedScreen extends StatelessWidget {
                                               fit: BoxFit.contain,
                                               errorBuilder: (ctx, err, stack) =>
                                                   const Icon(
-                                                Icons
-                                                    .directions_car_filled_rounded,
-                                                color: AppColor.textMuted,
-                                                size: 26,
-                                              ),
+                                                    Icons
+                                                        .directions_car_filled_rounded,
+                                                    color: AppColor.textMuted,
+                                                    size: 26,
+                                                  ),
                                             ),
                                           ),
                                         ),
@@ -145,7 +142,6 @@ class SavedScreen extends StatelessWidget {
                   ),
                 ),
 
-              // --- Saved list ---
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 26, 20, 12),

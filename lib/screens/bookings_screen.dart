@@ -6,9 +6,6 @@ import 'package:rent_car/main.dart';
 import 'package:rent_car/widgets/painters/aurora_background.dart';
 import 'package:rent_car/widgets/painters/glass_card.dart';
 
-/// Bookings tab: segmented view over the user's real bookings with an optional
-/// date-range filter. Bookings made from the details screen appear here
-/// immediately.
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
 
@@ -29,7 +26,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
     if (_selectedDateRange == null) return base;
 
     return base.where((booking) {
-      // Overlap test: booking intersects the selected window.
       return !booking.start.isAfter(_selectedDateRange!.end) &&
           !booking.end.isBefore(_selectedDateRange!.start);
     }).toList();
@@ -47,7 +43,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
           bottom: false,
           child: Column(
             children: [
-              // --- Header ---
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
                 child: Row(
@@ -116,7 +111,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 ),
               ),
 
-              // --- Summary strip ---
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
                 child: Row(
@@ -148,7 +142,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 ),
               ),
 
-              // --- Active date filter chip ---
               if (_selectedDateRange != null)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
@@ -170,8 +163,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       ),
                       const Spacer(),
                       GestureDetector(
-                        onTap: () =>
-                            setState(() => _selectedDateRange = null),
+                        onTap: () => setState(() => _selectedDateRange = null),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 9,
@@ -205,7 +197,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
                   ),
                 ),
 
-              // --- Segmented control ---
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
                 child: Container(
@@ -241,7 +232,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
               const SizedBox(height: 18),
 
-              // --- List ---
               Expanded(
                 child: bookings.isEmpty
                     ? _EmptyBookings(hasFilter: _selectedDateRange != null)
@@ -599,10 +589,7 @@ class _EmptyBookings extends StatelessWidget {
               hasFilter
                   ? 'Try widening the date range.'
                   : 'Pick a car and book your first drive.',
-              style: const TextStyle(
-                color: AppColor.textMuted,
-                fontSize: 12.5,
-              ),
+              style: const TextStyle(color: AppColor.textMuted, fontSize: 12.5),
             ),
             if (!hasFilter) ...[
               const SizedBox(height: 20),

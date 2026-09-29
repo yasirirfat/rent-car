@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:rent_car/core/app_color.dart';
 import 'package:rent_car/model/tab_items.dart';
 
-/// Navigation tabs in display order. Colours cycle through the brand accents so
-/// the raised handle changes hue as you move across the bar.
 List<TabItem> tabItems = [
   TabItem(
     Icons.home_rounded,

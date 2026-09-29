@@ -1,19 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rent_car/widgets/painters/speedometer.dart';
 
-/// Animated car instrument-cluster gauge.
-///
-/// Tween-animates from 0 to [value] when first built so the needle and value
-/// arc sweep in. Pass a new [value] and it animates to the new reading.
-///
-/// All text is painted by [SpeedometerPainter] rather than composited as
-/// widgets. That is what allows the readout, unit and caption to be positioned
-/// into reserved bands with measured offsets, so they can never overlap the
-/// numerals, ticks or needle.
-///
-/// The gauge is **blue only** - [gradientColors] is retained for source
-/// compatibility but is not forwarded to the painter, which always uses
-/// [AppColor.primary].
 class Speedometer extends StatefulWidget {
   const Speedometer({
     super.key,
@@ -31,15 +18,12 @@ class Speedometer extends StatefulWidget {
   final double maxValue;
   final double size;
 
-  /// Caption rendered in the bottom opening of the dial.
   final String label;
 
-  /// Unit rendered directly under the big readout.
   final String unit;
 
   final int decimals;
 
-  /// Deprecated and ignored - the gauge uses the primary blue.
   final List<Color>? gradientColors;
 
   final bool animateOnMount;

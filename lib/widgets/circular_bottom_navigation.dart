@@ -6,12 +6,6 @@ import 'package:rent_car/model/tab_items.dart';
 
 typedef CircularBottomNavSelectedCallback = Function(int? selectedPos);
 
-/// A bottom navigation bar where the selected tab rises into a glowing
-/// circular handle.
-///
-/// Behaviour is controller driven: writing to
-/// [CircularBottomNavigationController.value] selects a tab and fires
-/// [selectedCallback].
 class CircularBottomNavigation extends StatefulWidget {
   final List<TabItem> tabItems;
   final int selectedPos;
@@ -28,7 +22,6 @@ class CircularBottomNavigation extends StatefulWidget {
   final CircularBottomNavSelectedCallback? selectedCallback;
   final CircularBottomNavigationController? controller;
 
-  /// When true, tapping the already selected tab still fires the callback.
   final bool allowSelectedIconCallback;
 
   CircularBottomNavigation(
@@ -48,15 +41,18 @@ class CircularBottomNavigation extends StatefulWidget {
     this.controller,
     this.allowSelectedIconCallback = false,
     backgroundBoxShadow,
-  })  : backgroundBoxShadow = backgroundBoxShadow ??
-            [const BoxShadow(color: Color(0x33000000), blurRadius: 18)],
-        barBackgroundColor =
-            (barBackgroundGradient == null && barBackgroundColor == null)
-                ? AppColor.surface
-                : barBackgroundColor,
-        assert(barBackgroundColor == null || barBackgroundGradient == null,
-            "Both barBackgroundColor and barBackgroundGradient can't be not null."),
-        assert(tabItems.isNotEmpty, "tabItems is required");
+  }) : backgroundBoxShadow =
+           backgroundBoxShadow ??
+           [const BoxShadow(color: Color(0x33000000), blurRadius: 18)],
+       barBackgroundColor =
+           (barBackgroundGradient == null && barBackgroundColor == null)
+           ? AppColor.surface
+           : barBackgroundColor,
+       assert(
+         barBackgroundColor == null || barBackgroundGradient == null,
+         "Both barBackgroundColor and barBackgroundGradient can't be not null.",
+       ),
+       assert(tabItems.isNotEmpty, "tabItems is required");
 
   @override
   State<CircularBottomNavigation> createState() =>
@@ -71,7 +67,6 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
   late Animation<double> selectedPosAnimation;
   late Animation<double> itemsAnimation;
 
-  /// Per-item 0..1 selected weight, used to fade labels in and out.
   late List<double> _itemsSelectedState;
 
   int? selectedPos;
@@ -97,8 +92,10 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
       (index) => selectedPos == index ? 1.0 : 0.0,
     );
 
-    itemsController =
-        AnimationController(vsync: this, duration: widget.animationDuration);
+    itemsController = AnimationController(
+      vsync: this,
+      duration: widget.animationDuration,
+    );
     itemsController.addListener(_onItemsAnimationTick);
 
     selectedPosAnimation = _buildPosAnimation(
@@ -106,9 +103,10 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
       selectedPos!.toDouble(),
     );
 
-    itemsAnimation = Tween(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: itemsController, curve: _animationCurve),
-    );
+    itemsAnimation = Tween(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: itemsController, curve: _animationCurve));
   }
 
   void _onItemsAnimationTick() {
@@ -126,9 +124,10 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
   }
 
   Animation<double> _buildPosAnimation(double begin, double end) {
-    return Tween(begin: begin, end: end).animate(
-      CurvedAnimation(parent: itemsController, curve: _animationCurve),
-    );
+    return Tween(
+      begin: begin,
+      end: end,
+    ).animate(CurvedAnimation(parent: itemsController, curve: _animationCurve));
   }
 
   void _newSelectedPosNotify() {
@@ -170,7 +169,8 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
         ? widget.backgroundBoxShadow!.map((e) => e.blurRadius).reduce(max)
         : 0.0;
     final fullWidth = MediaQuery.of(context).size.width;
-    final fullHeight = widget.barHeight +
+    final fullHeight =
+        widget.barHeight +
         (widget.circleSize / 2) +
         widget.circleStrokeWidth +
         maxShadowHeight;
@@ -178,11 +178,11 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
     final isRTL = Directionality.of(context) == TextDirection.rtl;
     final safeBottom = MediaQuery.paddingOf(context).bottom;
 
-    // Section rectangles for each tab.
     final boxes = <Rect>[];
     for (var i = 0; i < widget.tabItems.length; i++) {
-      final left =
-          isRTL ? fullWidth - (i + 1) * sectionsWidth : i * sectionsWidth;
+      final left = isRTL
+          ? fullWidth - (i + 1) * sectionsWidth
+          : i * sectionsWidth;
       boxes.add(
         Rect.fromLTRB(
           left,
@@ -195,7 +195,6 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
 
     final children = <Widget>[];
 
-    // 1. Full-size transparent hit area + bar backdrop.
     children.add(
       Positioned(
         left: 0,
@@ -208,7 +207,8 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
             safeBottom: safeBottom,
             gradient: widget.barBackgroundGradient,
             color: widget.barBackgroundColor ?? AppColor.surface,
-            circleCenterX: (selectedPosAnimation.value * sectionsWidth) +
+            circleCenterX:
+                (selectedPosAnimation.value * sectionsWidth) +
                 (sectionsWidth / 2),
             circleSize: widget.circleSize,
             maxShadowHeight: maxShadowHeight,
@@ -220,23 +220,24 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
       ),
     );
 
-    // 2. Icons + labels.
     for (var pos = 0; pos < boxes.length; pos++) {
       final r = boxes[pos];
       final iconSize = widget.iconsSize;
 
-      final selectedIconY = maxShadowHeight +
+      final selectedIconY =
+          maxShadowHeight +
           widget.circleStrokeWidth +
           ((widget.circleSize - widget.circleStrokeWidth * 2 - iconSize) / 2);
       final restingIconY = r.top + ((widget.barHeight - iconSize) / 2);
 
       double iconY;
       if (pos == previousSelectedPos) {
-        // Rising out of the handle, settling back into the bar.
-        iconY = selectedIconY +
+        iconY =
+            selectedIconY +
             (restingIconY - selectedIconY) * itemsAnimation.value;
       } else if (pos == selectedPos) {
-        iconY = restingIconY +
+        iconY =
+            restingIconY +
             (selectedIconY - restingIconY) * itemsAnimation.value;
       } else {
         iconY = restingIconY;
@@ -264,7 +265,6 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
         ),
       );
 
-      // Label under the bar, visible only for the selected tab.
       final opacity = _itemsSelectedState[pos].clamp(0.0, 1.0);
       if (opacity > 0.01) {
         children.add(
@@ -286,7 +286,6 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
         );
       }
 
-      // Tap target.
       if (!isSelected) {
         children.add(
           Positioned.fromRect(
@@ -317,8 +316,6 @@ class _CircularBottomNavigationState extends State<CircularBottomNavigation>
   }
 }
 
-/// Paints the bar surface, its top hairline, the raised circular handle and
-/// the glow that spills out around it.
 class _NavBarPainter extends CustomPainter {
   _NavBarPainter({
     required this.barHeight,
@@ -348,7 +345,6 @@ class _NavBarPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final barTop = maxShadowHeight + (circleSize / 2);
 
-    // --- Bar surface: flat solid fill, no gradient ---
     final barRect = Rect.fromLTWH(
       0,
       barTop,
@@ -360,7 +356,6 @@ class _NavBarPainter extends CustomPainter {
       Paint()..color = gradient?.colors.first ?? AppColor.surface,
     );
 
-    // --- Top hairline ---
     canvas.drawLine(
       Offset(0, barTop),
       Offset(size.width, barTop),
@@ -369,11 +364,9 @@ class _NavBarPainter extends CustomPainter {
         ..color = AppColor.stroke,
     );
 
-    // --- Circular handle ---
     final center = Offset(circleCenterX, barTop);
     final radius = circleSize / 2;
 
-    // Solid fill, no halo or ring.
     canvas.drawCircle(center, radius, Paint()..color = accent);
   }
 

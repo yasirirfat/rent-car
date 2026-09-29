@@ -2,12 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:rent_car/core/app_color.dart';
 import 'package:rent_car/model/car_model.dart';
 
-/// Horizontal category filter chips.
-///
-/// Unlike a purely decorative row, this calls back into the parent so the car
-/// list actually filters. The selected chip is a **solid** blue fill with white
-/// text - one flat colour, per the no-gradient rule - and an unselected chip is
-/// a white pill with a visible outline.
 class CategoryChips extends StatelessWidget {
   const CategoryChips({
     super.key,

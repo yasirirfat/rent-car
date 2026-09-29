@@ -3,17 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:rent_car/core/app_color.dart';
 
-/// Paints a raised panel for the light theme: a solid white surface, a soft
-/// two-layer shadow, and a hairline border that can carry an accent.
-///
-/// Deliberately plain. Earlier revisions layered a translucent frosted fill, an
-/// accent bloom in the corner and a top sheen; on the light theme all three
-/// read as smudges rather than depth. Elevation here comes from exactly two
-/// signals - the shadow and the border - which is what a clean light UI uses.
-///
-/// The old constructor arguments ([glowColor], [glowOpacity], [fillTop],
-/// [fillBottom], [innerHighlight]) are retained so call sites keep compiling.
-/// They no longer paint anything; use [surface] for a flat override.
 class GlassCardPainter extends CustomPainter {
   GlassCardPainter({
     this.radius = 20,
@@ -33,22 +22,17 @@ class GlassCardPainter extends CustomPainter {
   final Gradient? borderGradient;
   final double borderWidth;
 
-  /// Retained for source compatibility - no longer paints a bloom.
   final Color? glowColor;
   final double glowOpacity;
 
-  /// Retained for source compatibility - the fill is flat now.
   final Color? fillTop;
   final Color? fillBottom;
 
-  /// Flat base colour of the panel. Defaults to [AppColor.surface].
   final Color? surface;
 
-  /// Retained for source compatibility - no longer paints a sheen.
   final bool innerHighlight;
   final bool shadow;
 
-  /// Explicit hairline colour. Falls back to [AppColor.stroke].
   final Color? borderColor;
 
   @override
@@ -56,7 +40,6 @@ class GlassCardPainter extends CustomPainter {
     final rect = Offset.zero & size;
     final rrect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
 
-    // 1. Elevation: a wide ambient shadow plus a tight contact shadow.
     if (shadow) {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
@@ -78,13 +61,11 @@ class GlassCardPainter extends CustomPainter {
       );
     }
 
-    // 2. Surface fill - one flat colour, no gradient.
     canvas.drawRRect(
       rrect,
       Paint()..color = surface ?? fillTop ?? AppColor.surface,
     );
 
-    // 3. Hairline border.
     final borderPaint = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = borderWidth;
@@ -110,7 +91,6 @@ class GlassCardPainter extends CustomPainter {
   }
 }
 
-/// Convenience widget wrapping [GlassCardPainter].
 class GlassCard extends StatelessWidget {
   const GlassCard({
     super.key,
@@ -130,16 +110,13 @@ class GlassCard extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final double radius;
 
-  /// When provided, the card's border picks up a faint tint of the accent.
   final Color? accent;
 
-  /// Retained for source compatibility - no longer paints a bloom.
   final double glowStrength;
   final double borderWidth;
   final bool showBorder;
   final EdgeInsetsGeometry? margin;
 
-  /// Overrides the flat panel colour.
   final Color? surface;
   final bool shadow;
 
@@ -165,10 +142,6 @@ class GlassCard extends StatelessWidget {
   }
 }
 
-/// A soft circular accent badge placed behind centred content.
-///
-/// Previously an additive radial halo; on the light theme it is a flat tinted
-/// disc with a ring, which stays legible without adding a glow.
 class AccentHalo extends StatelessWidget {
   const AccentHalo({
     super.key,
@@ -213,14 +186,12 @@ class _HaloPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final radius = size.shortestSide / 2;
 
-    // Flat tinted disc - no radial falloff.
     canvas.drawCircle(
       center,
       radius * 0.72,
       Paint()..color = color.withValues(alpha: opacity * 0.35),
     );
 
-    // Concentric rings for structure.
     final ring = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1
@@ -235,7 +206,6 @@ class _HaloPainter extends CustomPainter {
       oldDelegate.color != color || oldDelegate.opacity != opacity;
 }
 
-/// Convenience: draw an arc sweep between [start] and [end] degrees.
 void drawArcSweep(
   Canvas canvas,
   Rect rect,

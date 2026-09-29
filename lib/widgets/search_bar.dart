@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rent_car/core/app_color.dart';
 
-/// Search input with a glass treatment, focus glow and a clear button that
-/// only appears while there is text.
 class SearchBars extends StatefulWidget {
   const SearchBars({
     super.key,
@@ -60,7 +58,7 @@ class _SearchBarsState extends State<SearchBars> {
     _internalController.removeListener(_syncTextState);
     _focusNode.removeListener(_syncFocusState);
     _focusNode.dispose();
-    // Only dispose a controller we created ourselves.
+
     if (widget.controller == null) {
       _internalController.dispose();
     }

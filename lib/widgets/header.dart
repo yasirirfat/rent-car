@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:rent_car/core/app_color.dart';
 import 'package:rent_car/core/app_state.dart';
 
-/// Home screen greeting header: avatar, user name, location and a notification
-/// button that reflects unread state.
 class Header extends StatelessWidget {
   const Header({super.key, this.onNotificationTap});
 
@@ -12,12 +10,11 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = AppState.of(context);
-    // Treat active bookings as "notifications" so the badge is meaningful.
+
     final alerts = state.activeCount;
 
     return Row(
       children: [
-        // Avatar with gradient ring.
         Container(
           padding: const EdgeInsets.all(2),
           decoration: const BoxDecoration(
@@ -37,8 +34,6 @@ class Header extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    // Monogram sits underneath so the avatar is never blank,
-                    // whether the photo is still decoding or missing entirely.
                     Container(
                       color: AppColor.surfaceHigh,
                       alignment: Alignment.center,
@@ -138,7 +133,6 @@ class Header extends StatelessWidget {
           ),
         ),
 
-        // Notification button with badge.
         GestureDetector(
           onTap: onNotificationTap,
           child: Stack(

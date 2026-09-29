@@ -15,7 +15,6 @@ import 'package:rent_car/widgets/painters/glass_card.dart';
 import 'package:rent_car/widgets/painters/hero_banner_painter.dart';
 import 'package:rent_car/widgets/search_bar.dart';
 
-/// Sort modes available from the home screen toolbar.
 enum SortMode {
   recommended('Recommended'),
   priceLow('Price: Low to High'),
@@ -47,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  /// Applies search, category filter and the active sort.
   List<CarModel> get _visibleCars {
     final query = _searchQuery.trim().toLowerCase();
 
@@ -76,12 +74,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return cars;
   }
 
-  /// The single highest rated car, promoted into the hero banner.
   CarModel get _featuredCar {
-    final sorted = [...carList]..sort((a, b) {
-      final byScore = b.performanceScore.compareTo(a.performanceScore);
-      return byScore != 0 ? byScore : b.rating.compareTo(a.rating);
-    });
+    final sorted = [...carList]
+      ..sort((a, b) {
+        final byScore = b.performanceScore.compareTo(a.performanceScore);
+        return byScore != 0 ? byScore : b.rating.compareTo(a.rating);
+      });
     return sorted.first;
   }
 
@@ -90,8 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       PageRouteBuilder(
-        // A short fade-through, which reads as the car taking over the screen
-        // without the heavy platform push that a MaterialPageRoute gives.
         transitionDuration: const Duration(milliseconds: 280),
         reverseTransitionDuration: const Duration(milliseconds: 220),
         pageBuilder: (_, _, _) => CarDetailsScreen(car: car),
@@ -139,8 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final state = AppState.of(context);
     final cars = _visibleCars;
-    final hasFilters =
-        _searchQuery.isNotEmpty || _category != CarCategory.all;
+    final hasFilters = _searchQuery.isNotEmpty || _category != CarCategory.all;
 
     return AuroraBackground(
       child: Scaffold(
@@ -152,201 +147,194 @@ class _HomeScreenState extends State<HomeScreen> {
               CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
-              // --- Header ---
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                  child: Header(
-                    onNotificationTap: () =>
-                        MainWrapper.goToTab(MainWrapper.bookingsTab),
-                  ),
-                ),
-              ),
-
-              // --- Hero spotlight ---
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
-                  child: _HeroSpotlight(
-                    car: _featuredCar,
-                    onTap: () => _openDetails(_featuredCar),
-                  ),
-                ),
-              ),
-
-              // --- Quick stats ---
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _MiniStat(
-                          icon: Icons.directions_car_filled_rounded,
-                          value: '${carList.length}',
-                          label: 'In Fleet',
-                          accent: AppColor.primary,
-                        ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                      child: Header(
+                        onNotificationTap: () =>
+                            MainWrapper.goToTab(MainWrapper.bookingsTab),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _MiniStat(
-                          icon: Icons.favorite_rounded,
-                          value: '${state.favouriteCount}',
-                          label: 'Saved',
-                          accent: AppColor.danger,
-                        ),
+                    ),
+                  ),
+
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+                      child: _HeroSpotlight(
+                        car: _featuredCar,
+                        onTap: () => _openDetails(_featuredCar),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _MiniStat(
-                          icon: Icons.bolt_rounded,
-                          value: '${cars.length}',
-                          label: 'Showing',
-                          accent: AppColor.secondary,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
 
-              // --- Search ---
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: SearchBars(
-                    controller: _searchController,
-                    onChanged: (value) => setState(() => _searchQuery = value),
-                  ),
-                ),
-              ),
-
-              // --- Category chips (now wired to filtering) ---
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: CategoryChips(
-                    selected: _category,
-                    onSelected: (category) =>
-                        setState(() => _category = category),
-                  ),
-                ),
-              ),
-
-              // --- Toolbar: count, sort, layout ---
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
-                  child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                      child: Row(
                         children: [
-                          Text(
-                            _category == CarCategory.all
-                                ? 'The Collection'
-                                : _category.label,
-                            style: const TextStyle(
-                              color: AppColor.textPrimary,
-                              fontSize: 21,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: -0.3,
+                          Expanded(
+                            child: _MiniStat(
+                              icon: Icons.directions_car_filled_rounded,
+                              value: '${carList.length}',
+                              label: 'In Fleet',
+                              accent: AppColor.primary,
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${cars.length} car${cars.length == 1 ? '' : 's'} available',
-                            style: const TextStyle(
-                              color: AppColor.textMuted,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _MiniStat(
+                              icon: Icons.favorite_rounded,
+                              value: '${state.favouriteCount}',
+                              label: 'Saved',
+                              accent: AppColor.danger,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _MiniStat(
+                              icon: Icons.bolt_rounded,
+                              value: '${cars.length}',
+                              label: 'Showing',
+                              accent: AppColor.secondary,
                             ),
                           ),
                         ],
                       ),
-                      const Spacer(),
-                      if (hasFilters)
-                        _IconChip(
-                          icon: Icons.filter_alt_off_rounded,
-                          onTap: _resetFilters,
-                          tooltip: 'Clear filters',
-                        ),
-                      const SizedBox(width: 8),
-                      _IconChip(
-                        icon: _gridView
-                            ? Icons.view_agenda_rounded
-                            : Icons.grid_view_rounded,
-                        onTap: () => setState(() => _gridView = !_gridView),
-                        tooltip: 'Change layout',
-                      ),
-                      const SizedBox(width: 8),
-                      _IconChip(
-                        icon: Icons.swap_vert_rounded,
-                        onTap: _showSortSheet,
-                        tooltip: 'Sort',
-                        active: _sortMode != SortMode.recommended,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
 
-              // --- Results ---
-              if (cars.isEmpty)
-                const SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: _EmptyResults(),
-                )
-              else if (_gridView)
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 6, 20, 120),
-                  sliver: SliverGrid(
-                    gridDelegate:
-                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 260,
-                          mainAxisSpacing: 14,
-                          crossAxisSpacing: 14,
-                          childAspectRatio: 1.32,
-                        ),
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final car = cars[index];
-                      return EntranceFade(
-                        order: index,
-                        child: CarGridCard(
-                          car: car,
-                          onTap: () => _openDetails(car),
-                          accent: AppColor.accentFor(index),
-                        ),
-                      );
-                    }, childCount: cars.length),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      child: SearchBars(
+                        controller: _searchController,
+                        onChanged: (value) =>
+                            setState(() => _searchQuery = value),
+                      ),
+                    ),
                   ),
-                )
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(20, 6, 20, 120),
-                  sliver: SliverList.builder(
-                    itemCount: cars.length,
-                    itemBuilder: (context, index) {
-                      final car = cars[index];
-                      return EntranceFade(
-                        order: index,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 14),
-                          child: CarCard(
-                            car: car,
-                            accent: AppColor.accentFor(index),
-                            onTap: () => _openDetails(car),
+
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: CategoryChips(
+                        selected: _category,
+                        onSelected: (category) =>
+                            setState(() => _category = category),
+                      ),
+                    ),
+                  ),
+
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
+                      child: Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _category == CarCategory.all
+                                    ? 'The Collection'
+                                    : _category.label,
+                                style: const TextStyle(
+                                  color: AppColor.textPrimary,
+                                  fontSize: 21,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.3,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${cars.length} car${cars.length == 1 ? '' : 's'} available',
+                                style: const TextStyle(
+                                  color: AppColor.textMuted,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      );
-                    },
+                          const Spacer(),
+                          if (hasFilters)
+                            _IconChip(
+                              icon: Icons.filter_alt_off_rounded,
+                              onTap: _resetFilters,
+                              tooltip: 'Clear filters',
+                            ),
+                          const SizedBox(width: 8),
+                          _IconChip(
+                            icon: _gridView
+                                ? Icons.view_agenda_rounded
+                                : Icons.grid_view_rounded,
+                            onTap: () => setState(() => _gridView = !_gridView),
+                            tooltip: 'Change layout',
+                          ),
+                          const SizedBox(width: 8),
+                          _IconChip(
+                            icon: Icons.swap_vert_rounded,
+                            onTap: _showSortSheet,
+                            tooltip: 'Sort',
+                            active: _sortMode != SortMode.recommended,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+
+                  if (cars.isEmpty)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _EmptyResults(),
+                    )
+                  else if (_gridView)
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 6, 20, 120),
+                      sliver: SliverGrid(
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 260,
+                              mainAxisSpacing: 14,
+                              crossAxisSpacing: 14,
+                              childAspectRatio: 1.32,
+                            ),
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final car = cars[index];
+                          return EntranceFade(
+                            order: index,
+                            child: CarGridCard(
+                              car: car,
+                              onTap: () => _openDetails(car),
+                              accent: AppColor.accentFor(index),
+                            ),
+                          );
+                        }, childCount: cars.length),
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 6, 20, 120),
+                      sliver: SliverList.builder(
+                        itemCount: cars.length,
+                        itemBuilder: (context, index) {
+                          final car = cars[index];
+                          return EntranceFade(
+                            order: index,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 14),
+                              child: CarCard(
+                                car: car,
+                                accent: AppColor.accentFor(index),
+                                onTap: () => _openDetails(car),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                 ],
               ),
 
-              // --- Floating compare bar ---
               if (state.compareCount > 0)
                 Positioned(
                   left: 20,
@@ -356,9 +344,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     count: state.compareCount,
                     onOpen: () => Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const CompareScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const CompareScreen()),
                     ),
                     onClear: state.clearCompare,
                   ),
@@ -371,11 +357,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Compare bar
-// -----------------------------------------------------------------------------
-
-/// Floating action bar shown once at least one car is queued for comparison.
 class _CompareBar extends StatelessWidget {
   const _CompareBar({
     required this.count,
@@ -427,9 +408,7 @@ class _CompareBar extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  canCompare
-                      ? 'Ready to compare'
-                      : 'Add one more to compare',
+                  canCompare ? 'Ready to compare' : 'Add one more to compare',
                   style: const TextStyle(
                     color: AppColor.textMuted,
                     fontSize: 10.5,
@@ -455,10 +434,7 @@ class _CompareBar extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 220),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 9,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 9),
               decoration: BoxDecoration(
                 color: canCompare ? AppColor.primary : AppColor.surfaceHigh,
                 borderRadius: BorderRadius.circular(12),
@@ -472,17 +448,13 @@ class _CompareBar extends StatelessWidget {
                   Icon(
                     Icons.compare_arrows_rounded,
                     size: 15,
-                    color: canCompare
-                        ? Colors.white
-                        : AppColor.textMuted,
+                    color: canCompare ? Colors.white : AppColor.textMuted,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     'Compare',
                     style: TextStyle(
-                      color: canCompare
-                          ? Colors.white
-                          : AppColor.textMuted,
+                      color: canCompare ? Colors.white : AppColor.textMuted,
                       fontSize: 12.5,
                       fontWeight: FontWeight.w700,
                       height: 1.2,
@@ -498,11 +470,6 @@ class _CompareBar extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Hero spotlight
-// -----------------------------------------------------------------------------
-
-/// Large promotional banner for the highest performance car in the fleet.
 class _HeroSpotlight extends StatelessWidget {
   const _HeroSpotlight({required this.car, required this.onTap});
 
@@ -524,7 +491,6 @@ class _HeroSpotlight extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // --- Text column: a bounded box, so nothing can spill ------
                   Expanded(
                     flex: 5,
                     child: Column(
@@ -584,8 +550,7 @@ class _HeroSpotlight extends StatelessWidget {
                           ],
                         ),
                         const Spacer(),
-                        // Price - now inside the text column, so it can never
-                        // sit underneath the car image.
+
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.baseline,
                           textBaseline: TextBaseline.alphabetic,
@@ -620,7 +585,7 @@ class _HeroSpotlight extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // --- Image column: its own bounded box, centred ------------
+
                   Expanded(
                     flex: 4,
                     child: Center(
@@ -630,10 +595,7 @@ class _HeroSpotlight extends StatelessWidget {
                           fit: BoxFit.contain,
                           alignment: Alignment.center,
                           filterQuality: FilterQuality.medium,
-                          // Decode at the size we paint at (3x for crispness on
-                          // high-DPI). The hero is the first thing on screen,
-                          // so decoding a full-resolution PNG here shows up as
-                          // a visible hitch on load.
+
                           cacheWidth: (c.maxWidth * 3).round(),
                           errorBuilder: (ctx, err, stack) =>
                               const SizedBox.shrink(),
@@ -650,10 +612,6 @@ class _HeroSpotlight extends StatelessWidget {
     );
   }
 }
-
-// -----------------------------------------------------------------------------
-// Small building blocks
-// -----------------------------------------------------------------------------
 
 class _MiniStat extends StatelessWidget {
   const _MiniStat({
@@ -772,10 +730,6 @@ class _EmptyResults extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------------------
-// Sort sheet
-// -----------------------------------------------------------------------------
-
 class _SortSheet extends StatelessWidget {
   const _SortSheet({required this.current});
 
@@ -841,9 +795,7 @@ class _SortSheet extends StatelessWidget {
                           ? Icons.radio_button_checked_rounded
                           : Icons.radio_button_unchecked_rounded,
                       size: 19,
-                      color: selected
-                          ? AppColor.secondary
-                          : AppColor.textMuted,
+                      color: selected ? AppColor.secondary : AppColor.textMuted,
                     ),
                     const SizedBox(width: 12),
                     Text(

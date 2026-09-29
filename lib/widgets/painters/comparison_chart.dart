@@ -3,12 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:rent_car/core/app_color.dart';
 
-/// A grouped, painter-drawn bar chart comparing up to four cars across a
-/// single normalised metric.
-///
-/// Each car gets its own coloured bar growing from a shared baseline, with the
-/// winner highlighted by a brighter cap and an amber label. Drawn entirely on
-/// a canvas so it stays crisp at any width.
 class ComparisonChartPainter extends CustomPainter {
   ComparisonChartPainter({
     required this.entries,
@@ -17,10 +11,8 @@ class ComparisonChartPainter extends CustomPainter {
     this.gridLines = 4,
   });
 
-  /// Label, value (pre-normalised 0..1) and colour for each bar.
   final List<ComparisonEntry> entries;
 
-  /// 0..1 grow-in progress.
   final double animation;
 
   final bool showGrid;
@@ -30,7 +22,6 @@ class ComparisonChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     if (entries.isEmpty) return;
 
-    // Reserve space for labels under the bars.
     const labelHeight = 34.0;
     final chartHeight = math.max(size.height - labelHeight, 1.0);
     final bandWidth = size.width / entries.length;
@@ -58,7 +49,6 @@ class ComparisonChartPainter extends CustomPainter {
         topRight: const Radius.circular(7),
       );
 
-      // Soft glow behind the bar.
       canvas.drawRRect(
         rect,
         Paint()
@@ -66,13 +56,8 @@ class ComparisonChartPainter extends CustomPainter {
           ..maskFilter = MaskFilter.blur(BlurStyle.normal, isBest ? 14 : 7),
       );
 
-      // Solid bar body - flat accent colour, no gradient.
-      canvas.drawRRect(
-        rect,
-        Paint()..color = entry.color,
-      );
+      canvas.drawRRect(rect, Paint()..color = entry.color);
 
-      // Bright cap on the leading edge.
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(
@@ -83,11 +68,9 @@ class ComparisonChartPainter extends CustomPainter {
           ),
           const Radius.circular(3),
         ),
-        Paint()
-          ..color = isBest ? AppColor.textPrimary : entry.color,
+        Paint()..color = isBest ? AppColor.textPrimary : entry.color,
       );
 
-      // Value label above the bar.
       _text(
         canvas,
         entry.valueLabel,
@@ -99,7 +82,6 @@ class ComparisonChartPainter extends CustomPainter {
         ),
       );
 
-      // Name label under the chart.
       _text(
         canvas,
         entry.label,
@@ -140,7 +122,6 @@ class ComparisonChartPainter extends CustomPainter {
       oldDelegate.entries.length != entries.length;
 }
 
-/// One bar in a [ComparisonChartPainter].
 class ComparisonEntry {
   const ComparisonEntry({
     required this.label,
@@ -149,25 +130,17 @@ class ComparisonEntry {
     required this.color,
   });
 
-  /// Short name shown under the bar.
   final String label;
 
-  /// Normalised 0..1 height.
   final double value;
 
-  /// Text shown above the bar, e.g. "340 km/h".
   final String valueLabel;
 
   final Color color;
 }
 
-/// Wraps [ComparisonChartPainter] with a grow-in animation.
 class ComparisonChart extends StatefulWidget {
-  const ComparisonChart({
-    super.key,
-    required this.entries,
-    this.height = 190,
-  });
+  const ComparisonChart({super.key, required this.entries, this.height = 190});
 
   final List<ComparisonEntry> entries;
   final double height;
@@ -224,7 +197,6 @@ class _ComparisonChartState extends State<ComparisonChart>
   }
 }
 
-/// A tiny radial sparkline used to show a spec's share of the theoretical max.
 class GaugeDot extends StatelessWidget {
   const GaugeDot({
     super.key,
@@ -260,7 +232,6 @@ class _GaugeDotPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final radius = size.shortestSide / 2 - 2;
 
-    // Track
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       math.pi * 0.75,
@@ -273,7 +244,6 @@ class _GaugeDotPainter extends CustomPainter {
         ..color = AppColor.textPrimary.withValues(alpha: 0.08),
     );
 
-    // Value
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       math.pi * 0.75,
@@ -286,7 +256,6 @@ class _GaugeDotPainter extends CustomPainter {
         ..color = color,
     );
 
-    // Core dot
     canvas.drawCircle(
       center,
       radius * 0.34,

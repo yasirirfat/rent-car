@@ -6,10 +6,6 @@ import 'package:rent_car/main.dart';
 import 'package:rent_car/widgets/painters/aurora_background.dart';
 import 'package:rent_car/widgets/painters/hero_banner_painter.dart';
 
-/// Animated splash / intro screen.
-///
-/// Layers a painted aurora backdrop, an expanding dashed halo, the brand logo
-/// and a staggered entrance for the title and description.
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
 
@@ -51,7 +47,6 @@ class _IntroScreenState extends State<IntroScreen>
     super.dispose();
   }
 
-  /// Helper to stagger a child animation inside the entrance timeline.
   Animation<double> _stage(double start, double end, Curve curve) {
     return CurvedAnimation(
       parent: _entrance,
@@ -100,14 +95,12 @@ class _IntroScreenState extends State<IntroScreen>
               children: [
                 const Spacer(flex: 2),
 
-                // --- Rotating halo + logo ---
                 SizedBox(
                   width: 230,
                   height: 230,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Counter-rotating dashed rings.
                       AnimatedBuilder(
                         animation: _spin,
                         builder: (context, _) {
@@ -143,7 +136,7 @@ class _IntroScreenState extends State<IntroScreen>
                           );
                         },
                       ),
-                      // Brand logo, scaled in.
+
                       ScaleTransition(
                         scale: _stage(0.0, 0.5, Curves.easeOutBack),
                         child: FadeTransition(
@@ -169,7 +162,6 @@ class _IntroScreenState extends State<IntroScreen>
 
                 const SizedBox(height: 44),
 
-                // --- Title ---
                 FadeTransition(
                   opacity: _stage(0.25, 0.65, Curves.easeOut),
                   child: SlideTransition(
@@ -217,7 +209,6 @@ class _IntroScreenState extends State<IntroScreen>
 
                 SizedBox(height: size.height * 0.05),
 
-                // --- Description ---
                 FadeTransition(
                   opacity: _stage(0.45, 0.85, Curves.easeOut),
                   child: const Text(
@@ -234,7 +225,6 @@ class _IntroScreenState extends State<IntroScreen>
 
                 const Spacer(flex: 2),
 
-                // --- CTA ---
                 FadeTransition(
                   opacity: _stage(0.6, 1.0, Curves.easeOut),
                   child: SlideTransition(
@@ -242,10 +232,7 @@ class _IntroScreenState extends State<IntroScreen>
                       begin: const Offset(0, 0.4),
                       end: Offset.zero,
                     ).animate(_stage(0.6, 1.0, Curves.easeOutCubic)),
-                    child: _EnterButton(
-                      pulse: _pulse,
-                      onTap: _enterApp,
-                    ),
+                    child: _EnterButton(pulse: _pulse, onTap: _enterApp),
                   ),
                 ),
 
@@ -285,7 +272,6 @@ class _IntroScreenState extends State<IntroScreen>
   }
 }
 
-/// Wide CTA with a soft pulsing ring behind it.
 class _EnterButton extends StatelessWidget {
   const _EnterButton({required this.pulse, required this.onTap});
 
@@ -303,7 +289,6 @@ class _EnterButton extends StatelessWidget {
           return Stack(
             alignment: Alignment.center,
             children: [
-              // Expanding halo.
               Container(
                 width: 300,
                 height: 62 + t * 14,
@@ -311,7 +296,9 @@ class _EnterButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColor.primary.withValues(alpha: 0.28 - t * 0.14),
+                      color: AppColor.primary.withValues(
+                        alpha: 0.28 - t * 0.14,
+                      ),
                       blurRadius: 30 + t * 18,
                       spreadRadius: 1 + t * 3,
                     ),

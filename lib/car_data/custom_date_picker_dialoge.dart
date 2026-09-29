@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rent_car/core/app_color.dart';
 
-/// Themed range date picker used for rental selection and booking filters.
-///
-/// Renders the stock [DateRangePickerDialog] inside a custom light shell so it
-/// reads as a focused "sheet" against the dark app, and normalises the result
-/// to a day-precision [DateTimeRange].
 class CustomDatePicker {
   static void openRangePicker({
     required BuildContext context,
@@ -25,9 +20,7 @@ class CustomDatePicker {
         return Dialog(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          // Kept tight so the stock range picker gets the maximum usable
-          // width - its header Row is split 50/50 and overflows on narrow
-          // phones if the dialog eats too much of the screen.
+
           insetPadding: const EdgeInsets.symmetric(
             horizontal: 12,
             vertical: 24,
@@ -110,7 +103,6 @@ class CustomDatePicker {
     });
   }
 
-  /// Strips the time component so day-count maths stays exact.
   static DateTimeRange _normalise(DateTimeRange range) {
     return DateTimeRange(
       start: DateTime(range.start.year, range.start.month, range.start.day),
@@ -118,11 +110,20 @@ class CustomDatePicker {
     );
   }
 
-  /// Formats a range the way the app displays it, e.g. "12 Mar - 15 Mar".
   static String formatRange(DateTimeRange range, {List<String>? months}) {
     const defaultMonths = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final m = months ?? defaultMonths;
     return '${range.start.day} ${m[range.start.month - 1]} - '
@@ -130,7 +131,6 @@ class CustomDatePicker {
   }
 }
 
-/// Applies the app's accent colours to the stock range picker.
 class _PickerShell extends StatelessWidget {
   const _PickerShell({
     required this.initialDateRange,
@@ -164,8 +164,9 @@ class _PickerShell extends StatelessWidget {
           headerBackgroundColor: AppColor.surfaceHigh,
           headerForegroundColor: AppColor.textPrimary,
           dividerColor: Colors.transparent,
-          rangeSelectionBackgroundColor:
-              AppColor.primary.withValues(alpha: 0.22),
+          rangeSelectionBackgroundColor: AppColor.primary.withValues(
+            alpha: 0.22,
+          ),
           rangePickerBackgroundColor: Colors.transparent,
           rangePickerSurfaceTintColor: Colors.transparent,
           dayForegroundColor: WidgetStateProperty.resolveWith((states) {
@@ -186,10 +187,7 @@ class _PickerShell extends StatelessWidget {
           dayOverlayColor: WidgetStateProperty.all(
             AppColor.primary.withValues(alpha: 0.18),
           ),
-          dayStyle: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 13,
-          ),
+          dayStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
           yearForegroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
               return AppColor.scrim;
@@ -206,10 +204,7 @@ class _PickerShell extends StatelessWidget {
           todayBorder: const BorderSide(color: AppColor.amber, width: 1.4),
           todayForegroundColor: WidgetStateProperty.all(AppColor.amber),
           rangePickerHeaderForegroundColor: AppColor.textPrimary,
-          // The stock header text is sized for a tablet-width dialog. Pinning
-          // both header styles to a compact scale is what stops the header Row
-          // from overflowing on a 360-400px phone, which it otherwise did by
-          // more than 100px once a range was selected.
+
           rangePickerHeaderHeadlineStyle: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w800,

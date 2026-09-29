@@ -3,8 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:rent_car/core/app_color.dart';
 
-/// A circular progress ring with a gradient stroke, soft track and an
-/// optional icon or label in the middle. Animates from 0 to [value].
 class ProgressRing extends StatefulWidget {
   const ProgressRing({
     super.key,
@@ -18,7 +16,6 @@ class ProgressRing extends StatefulWidget {
     this.startAngle = -90,
   });
 
-  /// 0..1 normalised progress.
   final double value;
   final double size;
   final double strokeWidth;
@@ -41,9 +38,10 @@ class _ProgressRingState extends State<ProgressRing>
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
-    _animation = Tween<double>(begin: 0, end: widget.value).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: widget.value,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     Future.delayed(const Duration(milliseconds: 100), () {
       if (mounted) _controller.forward();
     });
@@ -115,7 +113,6 @@ class _RingPainter extends CustomPainter {
     final startRad = startAngle * math.pi / 180;
     final progress = value.clamp(0.0, 1.0);
 
-    // Track
     canvas.drawArc(
       rect,
       0,
@@ -131,7 +128,6 @@ class _RingPainter extends CustomPainter {
 
     final sweep = math.pi * 2 * progress;
 
-    // Glow
     canvas.drawArc(
       rect,
       startRad,
@@ -141,8 +137,9 @@ class _RingPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round
         ..strokeWidth = strokeWidth * 1.8
-        ..color = (gradientColors?.first ?? AppColor.primary)
-            .withValues(alpha: 0.22)
+        ..color = (gradientColors?.first ?? AppColor.primary).withValues(
+          alpha: 0.22,
+        )
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
     );
 
@@ -158,7 +155,6 @@ class _RingPainter extends CustomPainter {
         ..color = gradientColors?.first ?? AppColor.primary,
     );
 
-    // End cap dot
     final endRad = startRad + sweep;
     final dot = Offset(
       center.dx + radius * math.cos(endRad),
@@ -178,8 +174,6 @@ class _RingPainter extends CustomPainter {
       oldDelegate.startAngle != startAngle;
 }
 
-/// A horizontal stat bar: label, animated fill and value text. The fill uses
-/// a gradient with a bright rounded head.
 class StatBar extends StatefulWidget {
   const StatBar({
     super.key,
@@ -204,8 +198,7 @@ class StatBar extends StatefulWidget {
   State<StatBar> createState() => _StatBarState();
 }
 
-class _StatBarState extends State<StatBar>
-    with SingleTickerProviderStateMixin {
+class _StatBarState extends State<StatBar> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late Animation<double> _animation;
 
@@ -216,9 +209,10 @@ class _StatBarState extends State<StatBar>
       vsync: this,
       duration: const Duration(milliseconds: 1100),
     );
-    _animation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
     Future.delayed(const Duration(milliseconds: 150), () {
       if (mounted) _controller.forward();
     });
@@ -233,7 +227,9 @@ class _StatBarState extends State<StatBar>
   @override
   Widget build(BuildContext context) {
     final accent = widget.accent ?? AppColor.primary;
-    final ratio = widget.max <= 0 ? 0.0 : (widget.value / widget.max).clamp(0.0, 1.0);
+    final ratio = widget.max <= 0
+        ? 0.0
+        : (widget.value / widget.max).clamp(0.0, 1.0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,8 +240,7 @@ class _StatBarState extends State<StatBar>
               Icon(widget.icon, size: 15, color: accent),
               const SizedBox(width: 7),
             ],
-            // The label yields before the value does - the numeric readout is
-            // the more important of the two and must stay fully legible.
+
             Flexible(
               child: Text(
                 widget.label,
@@ -262,8 +257,7 @@ class _StatBarState extends State<StatBar>
             const SizedBox(width: 8),
             const Spacer(),
             Text(
-              widget.displayValue ??
-                  '${(ratio * 100).toStringAsFixed(0)}%',
+              widget.displayValue ?? '${(ratio * 100).toStringAsFixed(0)}%',
               maxLines: 1,
               style: TextStyle(
                 color: accent,
@@ -325,7 +319,6 @@ class _StatBarPainter extends CustomPainter {
       radius,
     );
 
-    // Glow under the fill.
     canvas.drawRRect(
       fill,
       Paint()
@@ -335,7 +328,6 @@ class _StatBarPainter extends CustomPainter {
 
     canvas.drawRRect(fill, Paint()..color = accent);
 
-    // Bright head.
     canvas.drawCircle(
       Offset(fillWidth - height / 2, height / 2),
       height * 0.42,

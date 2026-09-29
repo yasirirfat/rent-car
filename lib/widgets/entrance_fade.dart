@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Fades and lifts its child into place once, shortly after first build.
-///
-/// Used for list items so the home screen assembles itself rather than
-/// snapping in. The motion is deliberately small - 14px of travel over 260ms -
-/// because the brief asks for animations that only ever *support* the interface.
-///
-/// The stagger is capped so a long list never feels sluggish: item 0 starts
-/// immediately and item 6 onward starts at the same time as item 6.
 class EntranceFade extends StatefulWidget {
   const EntranceFade({
     super.key,
@@ -19,15 +11,12 @@ class EntranceFade extends StatefulWidget {
 
   final Widget child;
 
-  /// Position in the list. Drives the stagger delay.
   final int order;
 
-  /// Vertical travel distance in logical pixels.
   final double offset;
 
   final Duration duration;
 
-  /// Maximum number of staggers before the delay stops growing.
   static const int maxStagger = 6;
 
   @override
@@ -39,8 +28,6 @@ class _EntranceFadeState extends State<EntranceFade>
   late final AnimationController _controller;
   late final Animation<double> _curve;
 
-  /// Set once the entrance has finished, so the wrapper can hand the child
-  /// straight back and stop compositing.
   bool _done = false;
 
   @override
@@ -62,7 +49,6 @@ class _EntranceFadeState extends State<EntranceFade>
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed && mounted) {
-        // Drop the Opacity/Transform layers for good.
         setState(() => _done = true);
       }
     });
@@ -76,11 +62,6 @@ class _EntranceFadeState extends State<EntranceFade>
 
   @override
   Widget build(BuildContext context) {
-    // Once settled, return the bare child.
-    //
-    // `Opacity` forces a saveLayer on every frame it is present, and a long
-    // list keeps one per card alive forever - an animation that has already
-    // finished should cost nothing at scroll time.
     if (_done) return widget.child;
 
     return AnimatedBuilder(
